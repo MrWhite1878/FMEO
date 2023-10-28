@@ -1,7 +1,4 @@
-# Length Adjustable "Super" Tic Tac Toe in pygame
-# It's just 9 tic tac toe boards in a 3x3 grid where you have to win 3 small games in a row to win
-# Full super tic tac toe coming soon
-
+# Length Adjustable Super Tic Tac Toe in pygame (Full rules implemented)
 import pygame
 
 # Define colors
@@ -73,7 +70,7 @@ board = [[[[0, 0, 0],
 
 # Handle player moves
 def handle_move(bigRow, bigCol, smolRow, smolCol, player):
-    if board[bigRow][bigCol][smolRow][smolCol] == 0:
+    if board[bigRow][bigCol][smolRow][smolCol] == 0 and smol_check_winner(bigRow, bigCol) == None:
         board[bigRow][bigCol][smolRow][smolCol] = player
         return True
     else:
@@ -157,6 +154,8 @@ def display_winner(winner):
 
 # Game loop
 player = 1 # 1 = O, 2 = X
+forceRow = -1
+forceCol = -1
 game_over = False
 while not game_over:
     for event in pygame.event.get():
@@ -168,15 +167,47 @@ while not game_over:
                 bigCol = int(event.pos[0] // third)
                 smolRow = int((event.pos[1] // ninth) % 3)
                 smolCol = int((event.pos[0] // ninth) % 3)
-                if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                    player = 2
+                if bigCol == forceCol and bigRow == forceRow:
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 2
+                        if smol_check_winner(smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1
+                elif forceRow == -1 and forceCol == -1:
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 2
+                        if smol_check_winner(smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1
             else:
                 bigRow = int(event.pos[1] // third)
                 bigCol = int(event.pos[0] // third)
                 smolRow = int((event.pos[1] // ninth) % 3)
-                smolCol = int((event.pos[0 ]// ninth) % 3)
-                if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                    player = 1
+                smolCol = int((event.pos[0] // ninth) % 3)
+                if bigCol == forceCol and bigRow == forceRow:
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 1
+                        if smol_check_winner(smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1
+                elif forceRow == -1 and forceCol == -1:
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 1
+                        if smol_check_winner(smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1
             dubCol, dubRow = 0, 0 # dub for W for winner
             for i in range(3):
                 for j in range(3):
