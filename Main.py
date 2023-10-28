@@ -1,4 +1,5 @@
 # Length Adjustable Super Tic Tac Toe in pygame (Full rules implemented)
+# make a menu and a way to restart the game and better exit
 import pygame
 
 # Define colors
@@ -11,7 +12,7 @@ LIGHT_RED = (255, 100, 100)
 LIGHT_BLUE = (100, 100, 255)
 
 # Define Commonly Used Variables
-length = 500 
+length = 1200 
 third = length // 3
 ninth = length // 9
 spacing = length // 50
