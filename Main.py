@@ -1,18 +1,24 @@
+# Length Adjustable "Super" Tic Tac Toe in pygame
+# It's just 9 tic tac toe boards in a 3x3 grid where you have to win 3 small games in a row to win
+# Full super tic tac toe coming soon
+
 import pygame
 
 # Define colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-RED = (255, 0 , 0)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 LIGHT_RED = (255, 100, 100)
-LIGHT_BLUE = (52, 113, 235)
+LIGHT_BLUE = (100, 100, 255)
 
 # Define Commonly Used Variables
-length = 1000
+length = 500 
 third = length // 3
 ninth = length // 9
 spacing = length // 50
+bigSpacing = length // 20
 
 # Initialize Pygame
 pygame.init()
@@ -31,7 +37,7 @@ def draw_board():
     pygame.draw.line(screen, WHITE, (third, 0), (third, length), length//100)
     pygame.draw.line(screen, WHITE, (2*third, 0), (2*third, length), length//100)
     # Draw small tic tac toe boards
-    x = 1 # honestly i forget what this is but if i remove it the board breaks
+    x = 1 # Honestly, I forgot what this is, but if I remove it the board breaks
     for smallStep in range(6):
             for bigStep in range(3):
                 # Draw small horizontal lines
@@ -42,6 +48,7 @@ def draw_board():
                 x += 1
 
 # Create the game board
+#It's staggered like this because python cares about whitespace, and this is the easiest way to visualize it
 board = [[[[0, 0, 0], 
            [0, 0, 0], 
            [0, 0, 0]], [[0, 0, 0], 
@@ -72,7 +79,7 @@ def handle_move(bigRow, bigCol, smolRow, smolCol, player):
     else:
         return False
 
-# Check for a winner
+# Check for a winner in a small board
 def smol_check_winner(bigRow, bigCol):
     # Check rows
     for row in range(3):
@@ -98,6 +105,7 @@ def smol_check_winner(bigRow, bigCol):
     # No winner yet
     return None
 
+# Check for a winner in the big board
 def check_winner():
     # Check rows
     for row in range(3):
@@ -123,28 +131,32 @@ def check_winner():
     # No winner yet
     return None
 
+# Display the winner of a small board
 def display_smol_winner(bigRow, bigCol, winner):
     if winner == 1:
-        pygame.draw.circle(screen, RED, (bigCol*third+161, bigRow*third+161), 125, 10)
+        # Draw a circle
+        pygame.draw.circle(screen, RED, (bigCol*third + ninth+bigSpacing, bigRow*third + ninth+bigSpacing), length//8, length//100)
     elif winner == 2:
-        spacing = 50
-        pygame.draw.line(screen, BLUE, (bigCol*third+spacing, bigRow*third+spacing), ((bigCol+1)*third-spacing, (bigRow+1)*third-spacing), 20)
-        pygame.draw.line(screen, BLUE, ((bigCol+1)*third-spacing, bigRow*third+spacing), (bigCol*third+spacing, (bigRow+1)*third-spacing), 20)
+        # Draw an X
+        # Top left to bottom right 
+        pygame.draw.line(screen, BLUE, (bigCol*third + bigSpacing, bigRow*third + bigSpacing), ((bigCol+1)*third - bigSpacing, (bigRow+1)*third - bigSpacing), spacing)
+        # Bottom left to top right
+        pygame.draw.line(screen, BLUE, ((bigCol+1)*third - bigSpacing, bigRow*third + bigSpacing), (bigCol*third + bigSpacing, (bigRow+1)*third - bigSpacing), spacing)
 
 # Display the winner
 def display_winner(winner):
-    font = pygame.font.Font(None, 100)
+    font = pygame.font.Font(None, length//10)
     if winner == "Tie":
         text = font.render("Tie!", True, WHITE)
     elif winner == 1:
         text = font.render(f"O wins!", True, RED)
     elif winner == 2:
         text = font.render(f"X wins!", True, BLUE)
-    text_rect = text.get_rect(center=(500, 500))
+    text_rect = text.get_rect(center=(length//2, length//2))
     screen.blit(text, text_rect)
 
 # Game loop
-player = 1
+player = 1 # 1 = O, 2 = X
 game_over = False
 while not game_over:
     for event in pygame.event.get():
@@ -154,18 +166,18 @@ while not game_over:
             if player == 1:
                 bigRow = int(event.pos[1] // third)
                 bigCol = int(event.pos[0] // third)
-                smolRow = int((event.pos[1]// third//3)%3)
-                smolCol = int((event.pos[0]// third//3)%3)
+                smolRow = int((event.pos[1] // ninth) % 3)
+                smolCol = int((event.pos[0] // ninth) % 3)
                 if handle_move(bigRow, bigCol, smolRow, smolCol, player):
                     player = 2
             else:
                 bigRow = int(event.pos[1] // third)
                 bigCol = int(event.pos[0] // third)
-                smolRow = int((event.pos[1]// third//3)%3)
-                smolCol = int((event.pos[0]// third//3)%3)
+                smolRow = int((event.pos[1] // ninth) % 3)
+                smolCol = int((event.pos[0 ]// ninth) % 3)
                 if handle_move(bigRow, bigCol, smolRow, smolCol, player):
                     player = 1
-            dubCol, dubRow = 0, 0
+            dubCol, dubRow = 0, 0 # dub for W for winner
             for i in range(3):
                 for j in range(3):
                     smol_winner = smol_check_winner(i,j)
@@ -182,10 +194,10 @@ while not game_over:
             for smolRow in range(3):
                 for smolCol in range(3):
                     if board[bigRow][bigCol][smolRow][smolCol] == 1:
-                        pygame.draw.circle(screen, LIGHT_RED, (50+bigCol*third+smolCol*third//3, 50+bigRow*third+smolRow*third//3), 25, 5)
+                        pygame.draw.circle(screen, LIGHT_RED, (bigSpacing+bigCol*third+smolCol*ninth, bigSpacing+bigRow*third+smolRow*ninth), bigSpacing - spacing, length//200)
                     elif board[bigRow][bigCol][smolRow][smolCol] == 2:
-                        pygame.draw.line(screen, LIGHT_BLUE, (20+bigCol*third+smolCol*third//3, 20+bigRow*third+smolRow*third//3), (100+bigCol*third+smolCol*third//3, 100+bigRow*third+smolRow*third//3), 5)
-                        pygame.draw.line(screen, LIGHT_BLUE, (100+bigCol*third+smolCol*third//3, 20+bigRow*third+smolRow*third//3), (20+bigCol*third+smolCol*third//3, 100+bigRow*third+smolRow*third//3), 5)
+                        pygame.draw.line(screen, LIGHT_BLUE, (spacing+bigCol*third+smolCol*ninth, spacing+bigRow*third+smolRow*ninth), (length//10+bigCol*third+smolCol*ninth, length//10+bigRow*third+smolRow*ninth), length//200)
+                        pygame.draw.line(screen, LIGHT_BLUE, (length//10+bigCol*third+smolCol*ninth, spacing+bigRow*third+smolRow*ninth), (spacing+bigCol*third+smolCol*ninth, length//10+bigRow*third+smolRow*ninth), length//200)
 
     # Update the display
     pygame.display.update()
