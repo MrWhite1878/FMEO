@@ -12,17 +12,21 @@ pygame.init()
 
 # Define colors
 BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-DAVY_GREY = (85,85,85,255)
-LIGHT_BEIGE = (254,254,181,255)
+WHITE = (255,255,255)
+DAVY_GREY = (85,85,85)
+LIGHT_BEIGE = (254,254,181)
 LIGHT_RED = (255, 100, 100)
 LIGHT_BLUE = (100, 100, 255)
-LIGHT_PURPLE = (64,33,103,255)
-TURQUOISE = (99,216,255,255)
-BEAN_RED = (245,93,89,255)
+LIGHT_PURPLE = (64,33,103)
+TURQUOISE = (99,216,255)
+BEAN_RED = (245,93,89)
+CELESTE = (79,234,222)
+VIOLET = (243,124,243)
+VIVID_TANGERINE = (248,166,125)
 #[BACKGROUND, TEXT/BOARD, HIGHLIGHT, PLAYER1, PLAYER2]
 theme1 = [WHITE, DAVY_GREY, LIGHT_BEIGE, TURQUOISE, BEAN_RED]
 theme2 = [BLACK, WHITE, LIGHT_PURPLE, LIGHT_BLUE, LIGHT_RED]
+theme3 = [WHITE, DAVY_GREY, VIVID_TANGERINE, CELESTE, VIOLET]
 theme = theme1
 theme_num = 1
 
@@ -147,9 +151,12 @@ def change_theme():
     if theme_num == 1:
         theme_num = 2
         return theme2
-    else:
-        theme_num = 1
+    elif theme_num == 2:
+        theme_num = 3
         return theme1
+    elif theme_num == 3:
+        theme_num = 1
+        return theme3
 
 # Define function to quit the game
 def quit_game():
