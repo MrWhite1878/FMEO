@@ -4,6 +4,7 @@
 # Description: This is a game of Super Tic Tac Toe in pygame.
 # Note that the LENGTH variable is used to adjust the size of the game window and can be changed before runtime
 # Pressing the X button during the game will return you to the main menu
+# Bug found: if you go to the menu mid game, it is X's turn again and all non-won small boards are playable
 
 import pygame
 
