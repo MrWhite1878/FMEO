@@ -1,5 +1,5 @@
 # LENGTH Adjustable Super Tic Tac Toe in pygame (Full rules and menu included)
-# Author: Michael theme[1]
+# Author: Michael White
 # Date: 10/28/2023
 # Description: This is a game of Super Tic Tac Toe in pygame.
 # Note that the LENGTH variable is used to adjust the size of the game window and can be changed before runtime
@@ -15,8 +15,6 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 DAVY_GREY = (85,85,85,255)
 LIGHT_BEIGE = (254,254,181,255)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
 LIGHT_RED = (255, 100, 100)
 LIGHT_BLUE = (100, 100, 255)
 LIGHT_PURPLE = (64,33,103,255)
@@ -47,7 +45,7 @@ pygame.display.set_caption("Super Tic Tac Toe")
 menu_options = ["Start Game", "Instructions", "Theme", "Quit"]
 
 # Create the game board
-#It's staggered like this because python cares about whitespace, and this is the easiest way to visualize it
+# It's staggered like this because python cares about whitespace, and this is the easiest way to visualize it
 board = [[[[0, 0, 0], 
            [0, 0, 0], 
            [0, 0, 0]], [[0, 0, 0], 
@@ -195,7 +193,6 @@ def handle_input():
             for i, option in enumerate(menu_options):
                 text_rect = FONT.render(option, True, theme[0]).get_rect(center=(LENGTH//2, LENGTH//2 + i*LENGTH//10))
                 if text_rect.collidepoint(pos):
-                    print(option)
                     return option
     return None
 
@@ -275,13 +272,13 @@ def check_winner():
 def display_smol_winner(bigRow, bigCol, winner):
     if winner == 1:
         # Draw a circle
-        pygame.draw.circle(screen, RED, (bigCol*THIRD + NINTH+BIGSPACING, bigRow*THIRD + NINTH+BIGSPACING), LENGTH//8, LENGTH//100)
+        pygame.draw.circle(screen, theme[4], (bigCol*THIRD + NINTH+BIGSPACING, bigRow*THIRD + NINTH+BIGSPACING), LENGTH//8, LENGTH//100)
     elif winner == 2:
         # Draw an X
         # Top left to bottom right 
-        pygame.draw.line(screen, BLUE, (bigCol*THIRD + BIGSPACING, bigRow*THIRD + BIGSPACING), ((bigCol+1)*THIRD - BIGSPACING, (bigRow+1)*THIRD - BIGSPACING), SPACING)
+        pygame.draw.line(screen, theme[3], (bigCol*THIRD + BIGSPACING, bigRow*THIRD + BIGSPACING), ((bigCol+1)*THIRD - BIGSPACING, (bigRow+1)*THIRD - BIGSPACING), SPACING)
         # Bottom left to top right
-        pygame.draw.line(screen, BLUE, ((bigCol+1)*THIRD - BIGSPACING, bigRow*THIRD + BIGSPACING), (bigCol*THIRD + BIGSPACING, (bigRow+1)*THIRD - BIGSPACING), SPACING)
+        pygame.draw.line(screen, theme[3], ((bigCol+1)*THIRD - BIGSPACING, bigRow*THIRD + BIGSPACING), (bigCol*THIRD + BIGSPACING, (bigRow+1)*THIRD - BIGSPACING), SPACING)
 
 # Display the winner
 def display_winner(winner):
@@ -289,9 +286,9 @@ def display_winner(winner):
     if winner == "Tie":
         text = FONT.render("Tie!", True, theme[1])
     elif winner == 1:
-        text = FONT.render(f"O wins!", True, RED)
+        text = FONT.render(f"O wins!", True, theme[4])
     elif winner == 2:
-        text = FONT.render(f"X wins!", True, BLUE)
+        text = FONT.render(f"X wins!", True, theme[3])
     text_rect = text.get_rect(center=(LENGTH//2, LENGTH//2))
     screen.blit(text, text_rect)
     draw_board()
