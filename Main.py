@@ -4,7 +4,6 @@
 # Description: This is a game of Super Tic Tac Toe in pygame.
 # Note that the LENGTH variable is used to adjust the size of the game window and can be changed before runtime
 # Pressing the X button during the game will return you to the main menu
-# Bug found: if you go to the menu mid game, it is X's turn again and all non-won small boards are playable
 
 import pygame
 
@@ -302,13 +301,14 @@ def display_winner(winner):
     draw_board()
     pygame.display.update()
 
+#declared variables outside of function to prevent them from resetting every time the function is called
+player = 2 # 1 is O, 2 is X
+forceRow, forceCol = -1, -1
 def start_game():
     # Clear the screen
     screen.fill(theme[0])
     # Game loop
-    player = 2 # 1 = O, 2 = X
-    forceRow = -1
-    forceCol = -1
+    global player, forceRow, forceCol
     game_over = False
     while not game_over:
         for event in pygame.event.get():
