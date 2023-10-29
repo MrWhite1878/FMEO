@@ -153,10 +153,10 @@ def change_theme():
         return theme2
     elif theme_num == 2:
         theme_num = 3
-        return theme1
+        return theme3
     elif theme_num == 3:
         theme_num = 1
-        return theme3
+        return theme1
 
 # Define function to quit the game
 def quit_game():
