@@ -1,3 +1,5 @@
+import Main
+
 # inputs
 # AI IS ALWAYS 1, player 1.
 
