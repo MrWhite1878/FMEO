@@ -96,10 +96,12 @@ def main():
     player = 2
     draw_board()
     while True:
+        print(board)
         if player == 1:
             # Get the AI's move
             move = ai.get_move(board)
-            winner = check_winner()
+            board[move[1]][move[0]] = player
+            display_move(move[0], move[1], player)
             if winner != 0:
                 display_winner(winner)
                 break

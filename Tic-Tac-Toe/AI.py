@@ -7,11 +7,11 @@ class AI:
 
     def get_move(self, board):
         # Get a list of all empty cells on the board
-        empty_cells = [(i, j) for i in range(3) for j in range(3) if board[i][j] == 0]
-        
-        # If there are no empty cells, return None
-        if not empty_cells:
-            return None
-        
-        # Select a random empty cell and return its coordinates
+        empty_cells = []
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == 0:
+                    empty_cells.append([i, j])
+        print(empty_cells)
+        # Choose a random empty cell
         return random.choice(empty_cells)
