@@ -1,4 +1,3 @@
-import Game
 import random
 
 def get_move(board, player):
