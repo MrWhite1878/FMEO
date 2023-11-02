@@ -1,12 +1,4 @@
-<<<<<<< HEAD:TicTacToe/AI.py
-'''
-https://www.youtube.com/watch?v=l-hh51ncgDI
-'''
-import random
-
-=======
 # please see TTT_AI_X.py for better comments
->>>>>>> 94fb94298981a0aa5bd64070e92dd32d64021ae2:TicTacToe/TTT_AI_O.py
 
 # Check if the game has been won
 def check_win(board):

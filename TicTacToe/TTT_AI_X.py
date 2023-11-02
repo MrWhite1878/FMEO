@@ -1,3 +1,6 @@
+# credit for teaching the basics:
+# https://www.youtube.com/watch?v=l-hh51ncgDI
+
 # Check if the game has been won
 def check_win(board):
     # Check rows
