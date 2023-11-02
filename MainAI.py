@@ -6,7 +6,9 @@
 # Pressing the X button during the game will return you to the main menu
 
 import pygame
+import math
 import AI_X
+from math import sqrt
 
 # Initialize Pygame
 pygame.init()
@@ -30,7 +32,7 @@ VIVID_TANGERINE = (248,166,125)
 theme1 = [WHITE, DAVY_GREY, LIGHT_BEIGE, TURQUOISE, BEAN_RED]
 theme2 = [BLACK, WHITE, LIGHT_PURPLE, LIGHT_BLUE, LIGHT_RED]
 theme3 = [TINTED_WHITE, DAVY_GREY, VIVID_TANGERINE, CELESTE, VIOLET]
-theme = theme1
+theme = theme3
 theme_num = 1
 
 # Define Commonly Used Variables
@@ -255,11 +257,12 @@ def display_winner(winner):
 #declared variables outside of function to prevent them from resetting every time the function is called
 player = 2 # 1 is O, 2 is X
 forceRow, forceCol = -1, -1
+turnCount = 0
 def start_game():
     # Clear the screen
     screen.fill(theme[0])
     # Game loop
-    global player, forceRow, forceCol
+    global player, forceRow, forceCol, turnCount
     game_over = False
     while not game_over:
         for event in pygame.event.get():
@@ -267,6 +270,7 @@ def start_game():
                 game_over = True
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if player == 1:
+                    turnCount += 1
                     bigRow = int(event.pos[1] // THIRD)
                     bigCol = int(event.pos[0] // THIRD)
                     smolRow = int((event.pos[1] // NINTH) % 3)
@@ -289,26 +293,31 @@ def start_game():
                             else:
                                 forceRow = -1
                                 forceCol = -1
-                else:
-                    bigRow, bigCol, row, col = AI_X.get_move(board, player, forceRow, forceCol)
-                    if bigCol == forceCol and bigRow == forceRow:
-                        if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            player = 1
-                            if AI_X.smol_check_winner(board, smolRow, smolCol) == None:
-                                forceRow = smolRow
-                                forceCol = smolCol
-                            else:
-                                forceRow = -1
-                                forceCol = -1
-                    elif forceRow == -1 and forceCol == -1:
-                        if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            player = 1
-                            if AI_X.smol_check_winner(board, smolRow, smolCol) == None:
-                                forceRow = smolRow
-                                forceCol = smolCol
-                            else:
-                                forceRow = -1
-                                forceCol = -1  
+            # print("got here")
+            elif player == 2 and (pygame.display.get_surface() is not None):
+                # print(forceRow, forceCol)
+                depth = int(sqrt(turnCount) / 1.5) + 1
+                bigRow, bigCol, smolRow, smolCol = AI_X.get_move(board, depth, player, forceRow, forceCol)
+                turnCount += 1
+                # print(bigRow, bigCol, smolRow, smolCol)
+                if bigCol == forceCol and bigRow == forceRow:
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 1
+                        if AI_X.smol_check_winner(board, smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1
+                elif forceRow == -1 and forceCol == -1:
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 1
+                        if AI_X.smol_check_winner(board, smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1  
         # Draw the game board
         screen.fill(theme[0])
         for bigRow in range(3):
@@ -325,7 +334,7 @@ def start_game():
                         elif board[bigRow][bigCol][smolRow][smolCol] == 2:
                             pygame.draw.line(screen, theme[3], (SPACING+bigCol*THIRD+smolCol*NINTH, SPACING+bigRow*THIRD+smolRow*NINTH), (LENGTH//10+bigCol*THIRD+smolCol*NINTH, LENGTH//10+bigRow*THIRD+smolRow*NINTH), LENGTH//200)
                             pygame.draw.line(screen, theme[3], (LENGTH//10+bigCol*THIRD+smolCol*NINTH, SPACING+bigRow*THIRD+smolRow*NINTH), (SPACING+bigCol*THIRD+smolCol*NINTH, LENGTH//10+bigRow*THIRD+smolRow*NINTH), LENGTH//200)
-        if AI_X.check_winner(board) != None:
+        if AI_X.check_winner(board):
                     display_winner(AI_X.check_winner(board))
         draw_board()
         # print(theme)

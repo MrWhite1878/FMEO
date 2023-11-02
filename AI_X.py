@@ -1,3 +1,5 @@
+# functional, not amazing, not horrible
+
 # Check for a winner in a small board
 def smol_check_winner(board, bigRow, bigCol):
     # Check rows
@@ -48,17 +50,32 @@ def check_winner(board):
     if tie:
         return "Tie"
     # No winner yet
-    return None
+    return False
 
 evals = {
-    2: -10,
-    1: 10,
+    2: -100,
+    1: 100,
     "Tie": 0,
-    None: 0
 }
 
 def evaluate(board):
-    return evals[check_winner(board)]
+    if check_winner(board):
+        return evals[check_winner(board)]
+    else:
+        score = 0
+        for bigRow in range(3):
+            for bigCol in range(3):
+                if smol_check_winner(board, bigRow, bigCol) == 1:
+                    score += 5
+                elif smol_check_winner(board, bigRow, bigCol) == 2:
+                    score -= 5
+                for row in range(3):
+                    for col in range(3):
+                        if board[bigRow][bigCol][row][col] == 1:
+                            score += 2
+                        elif board[bigRow][bigCol][row][col] == 2:
+                            score -= 2
+        return score
     
 def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol):
     '''
@@ -76,49 +93,78 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
     if player == 1:
         depthCount += 1
         maxEval = -1000 # anything < -10 should work
-        for bigRow in range(3):
-            for bigCol in range(3):
-                for row in range(3):
-                    for col in range(3):
-                        if board[bigRow][bigCol][row][col] == 0 and forcedRow == bigRow and forcedCol == bigCol:
-                            board[bigRow][bigCol][row][col] = player
-                            eval = minimax(board, depth - 1, alpha, beta, 2, depthCount, row, col)[0] #all we care about it eval
-                            board[bigRow][bigCol][row][col] = 0
-                            maxEval = max(maxEval, eval)
-                            alpha = max(alpha, eval)
-                            if beta <= alpha: # no need to continue down the tree
-                                break
+        if forcedRow == -1 and forcedCol == -1:
+            for bigRow in range(3):
+                for bigCol in range(3):
+                    for row in range(3):
+                        for col in range(3):
+                            if board[bigRow][bigCol][row][col] == 0 and smol_check_winner(board, bigRow, bigCol) == None:
+                                board[bigRow][bigCol][row][col] = player
+                                eval = minimax(board, depth - 1, alpha, beta, 2, depthCount, row, col)[0] #all we care about it eval
+                                board[bigRow][bigCol][row][col] = 0
+                                maxEval = max(maxEval, eval)
+                                alpha = max(alpha, eval)
+                                if beta <= alpha: # no need to continue down the tree
+                                    break
+        else:
+            for row in range(3):
+                for col in range(3):
+                    if board[forcedRow][forcedCol][row][col] == 0:
+                        board[forcedRow][forcedCol][row][col] = player
+                        eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about it eval
+                        board[forcedRow][forcedCol][row][col] = 0
+                        maxEval = max(maxEval, eval)
+                        alpha = max(alpha, eval)
+                        if beta <= alpha: # no need to continue down the tree
+                            break
         return [maxEval, depthCount]
     # see above section for explanation
     else:
-        minEval = 1000
-        for bigRow in range(3):
-            for bigCol in range(3):
-                for row in range(3):
-                    for col in range(3):
-                        if board[bigRow][bigCol][row][col] == 0 and forcedRow == bigRow and forcedCol == bigCol:
-                            board[bigRow][bigCol][row][col] = player
-                            eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0]
-                            board[bigRow][bigCol][row][col] = 0
-                            minEval = min(minEval, eval)
-                            beta = min(beta, eval)
-                            if beta <= alpha:
-                                break
+        depthCount += 1
+        minEval = 1000 
+        if forcedRow == -1 and forcedCol == -1:
+            for bigRow in range(3):
+                for bigCol in range(3):
+                    for row in range(3):
+                        for col in range(3):
+                            if board[bigRow][bigCol][row][col] == 0 and smol_check_winner(board, bigRow, bigCol) == None:
+                                board[bigRow][bigCol][row][col] = player
+                                eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about it eval
+                                board[bigRow][bigCol][row][col] = 0
+                                maxEval = min(maxEval, eval)
+                                beta = min(alpha, eval)
+                                if beta <= alpha: # no need to continue down the tree
+                                    break
+        else:
+            for row in range(3):
+                for col in range(3):
+                     if board[forcedRow][forcedCol][row][col] == 0:
+                        board[forcedRow][forcedCol][row][col] = player
+                        eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about it eval
+                        board[forcedRow][forcedCol][row][col] = 0
+                        minEval = min(minEval, eval)
+                        beta = min(alpha, eval)
+                        if beta <= alpha: # no need to continue down the tree
+                            break
         return [minEval, depthCount]
 
 # returns the best move 
-def get_move(board, player, forcedRow, forcedCol):
+def get_move(board, depth, player, forcedRow, forcedCol):
+    # print("got here")
     bestEval = 1000
-    bestDepth = 100
-    bestMove = [-1, -1]
+    bestDepth = 1000
+    bestMove = [-1, -1, -1, -1]
     if forcedRow == -1 and forcedCol == -1:
         for bigRow in range(3):
             for bigCol in range(3):
                 for row in range(3):
                     for col in range(3):
-                        if board[bigRow][bigCol][row][col] == 0:
+                        if board[bigRow][bigCol][row][col] == 0 and smol_check_winner(board, bigRow, bigCol) == None:
                             board[bigRow][bigCol][row][col] = player
-                            moveEval, moveDepth = minimax(board, 1, -1000, 1000, 1, 0, row, col)
+                            # minimax (board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
+                            # print("got here")
+                            moveEval, moveDepth = minimax(board, depth, -1000, 1000, 1, 0, row, col)
+                            # print("got here")
                             # print(board, moveEval, moveDepth)
                             board[bigRow][bigCol][row][col] = 0
                             if moveEval < bestEval:
@@ -136,7 +182,7 @@ def get_move(board, player, forcedRow, forcedCol):
             for col in range(3):
                 if board[bigRow][bigCol][row][col] == 0:
                     board[bigRow][bigCol][row][col] = player
-                    moveEval, moveDepth = minimax(board, 1, -1000, 1000, 1, 0, row, col)
+                    moveEval, moveDepth = minimax(board, depth, -1000, 1000, 1, 0, row, col)
                     # print(board, moveEval, moveDepth)
                     board[bigRow][bigCol][row][col] = 0
                     if moveEval < bestEval:
