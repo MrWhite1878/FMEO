@@ -1,4 +1,8 @@
 # functional, not amazing, not horrible
+# some double checking with its score evaulations should be done
+# also more intricate score evaulations should be done
+#
+# Based on TTT AI, please see that file for more info
 
 # Check for a winner in a small board
 def smol_check_winner(board, bigRow, bigCol):
@@ -52,23 +56,28 @@ def check_winner(board):
     # No winner yet
     return False
 
+# Works like the board eval in chess
 evals = {
-    2: -100,
-    1: 100,
+    2: -500,
+    1: 500,
     "Tie": 0,
 }
 
+# Returns the score of the board
 def evaluate(board):
+    # if someone won just report that score
     if check_winner(board):
         return evals[check_winner(board)]
     else:
         score = 0
         for bigRow in range(3):
             for bigCol in range(3):
+                # Reward for winning a small board, punish for losing
                 if smol_check_winner(board, bigRow, bigCol) == 1:
                     score += 5
                 elif smol_check_winner(board, bigRow, bigCol) == 2:
                     score -= 5
+                # Reward for having more pieces in a small board, punish for having less
                 for row in range(3):
                     for col in range(3):
                         if board[bigRow][bigCol][row][col] == 1:
@@ -77,22 +86,31 @@ def evaluate(board):
                             score -= 2
         return score
     
+# You can read more about this alg online (see minimax wiki and TTT AI for a youtube video)
+# This is a minimax alg with alpha beta pruning, meaning it creates a data tree of moves,
+# assigns each board a value, and then it chooses the best move based on the values
+# The alpha beta pruning is a way to make the alg more efficient by not checking moves that
+# are obviously bad.
 def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol):
     '''
+    Parameters:
     board: starting node is the board
     depth: how deep into the tree is the node
     alpha: the new current best eval for X
     beta: best eval for O
     player: the maximizing player
     depthCount: keeps track of how deep into the tree the node is
+    forcedRow: if the player is forced to play in a certain row
+    forcedCol: if the player is forced to play in a certain col
     '''
+
     if depth == 0 or check_winner(board): # reachs max depth or winning board
-        return [evaluate(board), depthCount] # returns how deep into the tree it had to go
+        return [evaluate(board), depthCount] # returns how deep into the tree it had to go and node value
     
     # O is the maximizing player
     if player == 1:
         depthCount += 1
-        maxEval = -1000 # anything < -10 should work
+        maxEval = -1000 # anything < -500 should work
         if forcedRow == -1 and forcedCol == -1:
             for bigRow in range(3):
                 for bigCol in range(3):
@@ -100,7 +118,7 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
                         for col in range(3):
                             if board[bigRow][bigCol][row][col] == 0 and smol_check_winner(board, bigRow, bigCol) == None:
                                 board[bigRow][bigCol][row][col] = player
-                                eval = minimax(board, depth - 1, alpha, beta, 2, depthCount, row, col)[0] #all we care about it eval
+                                eval = minimax(board, depth - 1, alpha, beta, 2, depthCount, row, col)[0] #all we care about is eval
                                 board[bigRow][bigCol][row][col] = 0
                                 maxEval = max(maxEval, eval)
                                 alpha = max(alpha, eval)
@@ -111,13 +129,14 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
                 for col in range(3):
                     if board[forcedRow][forcedCol][row][col] == 0:
                         board[forcedRow][forcedCol][row][col] = player
-                        eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about it eval
+                        eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
                         board[forcedRow][forcedCol][row][col] = 0
                         maxEval = max(maxEval, eval)
                         alpha = max(alpha, eval)
                         if beta <= alpha: # no need to continue down the tree
                             break
         return [maxEval, depthCount]
+    
     # see above section for explanation
     else:
         depthCount += 1
@@ -129,7 +148,7 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
                         for col in range(3):
                             if board[bigRow][bigCol][row][col] == 0 and smol_check_winner(board, bigRow, bigCol) == None:
                                 board[bigRow][bigCol][row][col] = player
-                                eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about it eval
+                                eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
                                 board[bigRow][bigCol][row][col] = 0
                                 maxEval = min(maxEval, eval)
                                 beta = min(alpha, eval)
@@ -140,7 +159,7 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
                 for col in range(3):
                      if board[forcedRow][forcedCol][row][col] == 0:
                         board[forcedRow][forcedCol][row][col] = player
-                        eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about it eval
+                        eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
                         board[forcedRow][forcedCol][row][col] = 0
                         minEval = min(minEval, eval)
                         beta = min(alpha, eval)
