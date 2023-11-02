@@ -29,9 +29,9 @@ def check_win(board):
 
 # defining eval boarders
 evals ={
-    "X": 10,
-    "O": -10,
-    "Tie": 0
+    "X": -10,
+    "O": 10, #because we want o to win
+    "Tie": 0,
 }
 
 # returns if its winning loss or tie
@@ -46,7 +46,7 @@ def minimax(board, depth, player):
         return evaluate(board)
     
     if player == "X":
-        maxEval = 1000
+        maxEval = -1000
         for row in range(3):
             for col in range(3):
                 if board[row][col] == " ":
@@ -55,7 +55,7 @@ def minimax(board, depth, player):
                     board[row][col] = " "
         return maxEval
     else:
-        minEval = -1000
+        minEval = 1000
         for row in range(3):
             for col in range(3):
                 if board[row][col] == " ":
@@ -72,7 +72,8 @@ def get_move(board, player):
         for col in range(3):
             if board[row][col] == " ":
                 board[row][col] = player
-                moveEval = minimax(board, 20, "X")
+                moveEval = minimax(board, 1000, "X")
+                #print(board, moveEval)
                 board[row][col] = " "
                 if moveEval > bestEval:
                     bestEval = moveEval
