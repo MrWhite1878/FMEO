@@ -6,6 +6,7 @@
 # Note that the LENGTH variable is used to adjust the size of the game window and can be changed before runtime
 # Pressing the X button during the game will return you to the main menu
 # Pressing Theme will change the theme (there are 3)
+# Also, feel free to play around with the depth variable (line 294) to change the difficulty of the AI, at the expense of speed
 #
 # There will be slightly better and more comments in Main.py
 
@@ -300,7 +301,7 @@ def start_game():
             # print("got here")
             elif player == 2 and (pygame.display.get_surface() is not None):
                 # print(forceRow, forceCol)
-                depth = int(sqrt(turnCount) / 1.5) + 1
+                depth = int(sqrt(turnCount) / 1.25) + 1
                 bigRow, bigCol, smolRow, smolCol = AI_X.get_move(board, depth, player, forceRow, forceCol)
                 turnCount += 1
                 # print(bigRow, bigCol, smolRow, smolCol)
