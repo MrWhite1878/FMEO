@@ -290,10 +290,7 @@ def start_game():
                                 forceRow = -1
                                 forceCol = -1
                 else:
-                    bigRow = int(event.pos[1] // THIRD)
-                    bigCol = int(event.pos[0] // THIRD)
-                    smolRow = int((event.pos[1] // NINTH) % 3)
-                    smolCol = int((event.pos[0] // NINTH) % 3)
+                    bigRow, bigCol, row, col = AI_X.get_move(board, player, forceRow, forceCol)
                     if bigCol == forceCol and bigRow == forceRow:
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
                             player = 1
