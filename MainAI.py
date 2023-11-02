@@ -2,12 +2,15 @@
 # Author: Michael White
 # Date: 10/28/2023
 # Description: This is a game of Super Tic Tac Toe in pygame.
+#
 # Note that the LENGTH variable is used to adjust the size of the game window and can be changed before runtime
 # Pressing the X button during the game will return you to the main menu
+# Pressing Theme will change the theme (there are 3)
+#
+# There will be slightly better and more comments in Main.py
 
-import pygame
-import math
 import AI_X
+import pygame
 from math import sqrt
 
 # Initialize Pygame
@@ -256,7 +259,7 @@ def display_winner(winner):
 
 #declared variables outside of function to prevent them from resetting every time the function is called
 player = 2 # 1 is O, 2 is X
-forceRow, forceCol = -1, -1
+forceRow, forceCol = -1, -1 # -1 means no force, and they correspond to the move that the next player must make
 turnCount = 0
 def start_game():
     # Clear the screen
@@ -265,19 +268,20 @@ def start_game():
     global player, forceRow, forceCol, turnCount
     game_over = False
     while not game_over:
-        for event in pygame.event.get():
+        for event in pygame.event.get(): # aka whenever there's an event
             if event.type == pygame.QUIT:
                 game_over = True
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN: # click
                 if player == 1:
                     turnCount += 1
                     bigRow = int(event.pos[1] // THIRD)
                     bigCol = int(event.pos[0] // THIRD)
                     smolRow = int((event.pos[1] // NINTH) % 3)
                     smolCol = int((event.pos[0] // NINTH) % 3)
-                    if bigCol == forceCol and bigRow == forceRow:
+                    if bigCol == forceCol and bigRow == forceRow: # essentially, if the player in the highlighted board
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            player = 2
+                            player = 2 # switch players
+                            # this next part is self explanatory right?
                             if AI_X.smol_check_winner(board, smolRow, smolCol) == None:
                                 forceRow = smolRow
                                 forceCol = smolCol

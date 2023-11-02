@@ -2,11 +2,13 @@
 # Author: Michael White
 # Date: 10/28/2023
 # Description: This is a game of Super Tic Tac Toe in pygame.
+#
 # Note that the LENGTH variable is used to adjust the size of the game window and can be changed before runtime
 # Pressing the X button during the game will return you to the main menu
+# Pressing Theme will change the theme (there are 3)
 
 import pygame
-import AI_X
+import AI_X # for win functions
 
 # Initialize Pygame
 pygame.init()
@@ -254,7 +256,7 @@ def display_winner(winner):
 
 #declared variables outside of function to prevent them from resetting every time the function is called
 player = 2 # 1 is O, 2 is X
-forceRow, forceCol = -1, -1
+forceRow, forceCol = -1, -1 # -1 means no force, and they correspond to the move that the next player must make
 def start_game():
     # Clear the screen
     screen.fill(theme[0])
@@ -262,18 +264,19 @@ def start_game():
     global player, forceRow, forceCol
     game_over = False
     while not game_over:
-        for event in pygame.event.get():
+        for event in pygame.event.get(): # aka whenever there's an event
             if event.type == pygame.QUIT:
                 game_over = True
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN: # click
                 if player == 1:
                     bigRow = int(event.pos[1] // THIRD)
                     bigCol = int(event.pos[0] // THIRD)
                     smolRow = int((event.pos[1] // NINTH) % 3)
                     smolCol = int((event.pos[0] // NINTH) % 3)
-                    if bigCol == forceCol and bigRow == forceRow:
+                    if bigCol == forceCol and bigRow == forceRow: # essentially, if the player in the highlighted board
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            player = 2
+                            player = 2 # switch players
+                            # this next part is self explanatory right?
                             if AI_X.smol_check_winner(board, smolRow, smolCol) == None:
                                 forceRow = smolRow
                                 forceCol = smolCol
@@ -316,18 +319,26 @@ def start_game():
         screen.fill(theme[0])
         for bigRow in range(3):
             for bigCol in range(3):
+                # checks if there's a winner in the small board and displays it
                 if AI_X.smol_check_winner(board, bigRow, bigCol) != None:
                     display_smol_winner(bigRow, bigCol, AI_X.smol_check_winner(board, bigRow, bigCol))
+                # makes highlighted board
                 for i in playable_smol_boards(forceRow, forceCol):
                     if [bigRow, bigCol] == i:
                         pygame.draw.rect(screen, theme[2], (bigCol*THIRD + SPACING - 5, bigRow*THIRD + SPACING - 5, THIRD - 2*SPACING + 10, THIRD - 2*SPACING + 10))
+                
+                # draws the pieces
                 for smolRow in range(3):
                     for smolCol in range(3):
+                        # draws O's
                         if board[bigRow][bigCol][smolRow][smolCol] == 1:
                             pygame.draw.circle(screen, theme[4], (BIGSPACING+bigCol*THIRD+smolCol*NINTH, BIGSPACING+bigRow*THIRD+smolRow*NINTH), BIGSPACING - SPACING, LENGTH//200)
+                        # draws X's
                         elif board[bigRow][bigCol][smolRow][smolCol] == 2:
                             pygame.draw.line(screen, theme[3], (SPACING+bigCol*THIRD+smolCol*NINTH, SPACING+bigRow*THIRD+smolRow*NINTH), (LENGTH//10+bigCol*THIRD+smolCol*NINTH, LENGTH//10+bigRow*THIRD+smolRow*NINTH), LENGTH//200)
                             pygame.draw.line(screen, theme[3], (LENGTH//10+bigCol*THIRD+smolCol*NINTH, SPACING+bigRow*THIRD+smolRow*NINTH), (SPACING+bigCol*THIRD+smolCol*NINTH, LENGTH//10+bigRow*THIRD+smolRow*NINTH), LENGTH//200)
+        
+        # Check for win
         if AI_X.check_winner(board) != None:
                     display_winner(AI_X.check_winner(board))
         draw_board()
