@@ -39,7 +39,10 @@ def game_loop():
         winner = AI.check_win(board)
         if winner:
             display_board(board)
-            print(winner + " wins!")
+            if winner == "Tie":
+                print("It's a tie!")
+            else:
+                print(winner + " wins!")
             break
 
 # Start the game

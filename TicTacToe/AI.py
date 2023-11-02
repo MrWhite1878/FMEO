@@ -41,7 +41,7 @@ def evaluate(board):
     return evals[check_win(board)]
 
 # minimax algorithm
-def minimax(board, depth, player):
+def minimax(board, depth, alpha, beta, player):
     if depth == 0 or check_win(board):
         return evaluate(board)
     
@@ -51,8 +51,12 @@ def minimax(board, depth, player):
             for col in range(3):
                 if board[row][col] == " ":
                     board[row][col] = player
-                    maxEval = max(maxEval, minimax(board, depth - 1, "O"))
+                    eval = minimax(board, depth - 1, alpha, beta, "O")
                     board[row][col] = " "
+                    maxEval = max(maxEval, eval)
+                    alpha = max(alpha, eval)
+                    if beta <= alpha:
+                        break
         return maxEval
     else:
         minEval = 1000
@@ -60,8 +64,12 @@ def minimax(board, depth, player):
             for col in range(3):
                 if board[row][col] == " ":
                     board[row][col] = player
-                    minEval = min(minEval, minimax(board, depth - 1, "X"))
+                    eval = minimax(board, depth - 1, alpha, beta, "X")
                     board[row][col] = " "
+                    minEval = min(minEval, eval)
+                    beta = min(beta, eval)
+                    if beta <= alpha:
+                        break
         return minEval
 
 # returns the best move 
@@ -72,8 +80,8 @@ def get_move(board, player):
         for col in range(3):
             if board[row][col] == " ":
                 board[row][col] = player
-                moveEval = minimax(board, 1000, "X")
-                #print(board, moveEval)
+                moveEval = minimax(board, 9, -1000, 1000, "X")
+                print(board, moveEval)
                 board[row][col] = " "
                 if moveEval > bestEval:
                     bestEval = moveEval
