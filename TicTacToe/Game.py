@@ -1,5 +1,6 @@
 import TTT_AI_O
 import TTT_AI_X
+import TestAI
 
 
 # Display the game board
@@ -66,8 +67,9 @@ def game_loop_O():
     while True:
         display_board(board)
         if player == "X":
+            depth = 3
             print("Player " + player + ", it's your turn.")
-            cpuMove = TTT_AI_X.get_move(board, player)
+            cpuMove = TestAI.get_move(board, player, depth)
             print("CPU move: " + str(cpuMove))
             handle_move(board, cpuMove, player)
             player = "O"
