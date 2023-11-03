@@ -5,6 +5,9 @@
 # Based on TTT AI, please see that file for more info
 
 # Check for a winner in a small board
+import random
+
+
 def smol_check_winner(board, bigRow, bigCol):
     # Check rows
     for row in range(3):

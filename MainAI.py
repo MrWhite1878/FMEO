@@ -306,7 +306,8 @@ def start_game():
                 if turnCount < 2:
                     depth = 1
                 else:
-                    depth = int(sqrt(turnCount) / 1.4) + 1
+                    depth = 3
+                
                 bigRow, bigCol, smolRow, smolCol = AI_X.get_move(board, depth, player, forceRow, forceCol)
                 turnCount += 1
                 # print(bigRow, bigCol, smolRow, smolCol)
