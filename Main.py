@@ -8,27 +8,27 @@
 # Pressing Theme will change the theme (there are 3)
 
 import pygame
-import AI_X # for win functions
+import AI_X  # for win functions
 
 # Initialize Pygame
 pygame.init()
 
 # Define colors
 BLACK = (0, 0, 0)
-WHITE = (255,255,255)
+WHITE = (255, 255, 255)
 TINTED_WHITE = (252, 218, 202)
-DAVY_GREY = (85,85,85)
-LIGHT_BEIGE = (254,254,181)
+DAVY_GREY = (85, 85, 85)
+LIGHT_BEIGE = (254, 254, 181)
 LIGHT_RED = (255, 100, 100)
 LIGHT_BLUE = (100, 100, 255)
-LIGHT_PURPLE = (64,33,103)
-TURQUOISE = (99,216,255)
-BEAN_RED = (245,93,89)
-CELESTE = (79,234,222)
-VIOLET = (243,124,243)
-VIVID_TANGERINE = (248,166,125)
+LIGHT_PURPLE = (64, 33, 103)
+TURQUOISE = (99, 216, 255)
+BEAN_RED = (245, 93, 89)
+CELESTE = (79, 234, 222)
+VIOLET = (243, 124, 243)
+VIVID_TANGERINE = (248, 166, 125)
 
-#[BACKGROUND, TEXT/BOARD, HIGHLIGHT, PLAYER1, PLAYER2]
+# [BACKGROUND, TEXT/BOARD, HIGHLIGHT, PLAYER1, PLAYER2]
 theme1 = [WHITE, DAVY_GREY, LIGHT_BEIGE, TURQUOISE, BEAN_RED]
 theme2 = [BLACK, WHITE, LIGHT_PURPLE, LIGHT_BLUE, LIGHT_RED]
 theme3 = [TINTED_WHITE, DAVY_GREY, VIVID_TANGERINE, CELESTE, VIOLET]
@@ -43,7 +43,7 @@ SPACING = LENGTH // 50
 BIGSPACING = LENGTH // 20
 
 # Define font
-FONT = pygame.font.Font(None, LENGTH//10)
+FONT = pygame.font.Font(None, LENGTH // 10)
 
 # Set up the game window
 WINDOW_SIZE = (LENGTH, LENGTH)
@@ -55,50 +55,48 @@ menu_options = ["Start Game", "Instructions", "Theme", "Quit"]
 
 # Create the game board
 # It's staggered like this because python cares about whitespace, and this is the easiest way to visualize it
-board = [[[[0, 0, 0], 
-           [0, 0, 0], 
-           [0, 0, 0]], [[0, 0, 0], 
-                        [0, 0, 0], 
-                        [0, 0, 0]], [[0, 0, 0], 
-                                     [0, 0, 0], 
-                                     [0, 0, 0]]],
-         [[[0, 0, 0], 
-           [0, 0, 0], 
-           [0, 0, 0]], [[0, 0, 0], 
-                        [0, 0, 0], 
-                        [0, 0, 0]], [[0, 0, 0], 
-                                     [0, 0, 0], 
-                                     [0, 0, 0]]],
-         [[[0, 0, 0], 
-           [0, 0, 0], 
-           [0, 0, 0]], [[0, 0, 0], 
-                        [0, 0, 0], 
-                        [0, 0, 0]], [[0, 0, 0], 
-                                     [0, 0, 0], 
-                                     [0, 0, 0]]]]
+board = [
+    [
+        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+    ],
+    [
+        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+    ],
+    [
+        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+    ],
+]
+
 
 # Define function to display menu options
 def display_menu():
     # Check if the Pygame display is still open
     if pygame.display.get_surface() is None:
         return
-    
+
     # Clear the screen
     screen.fill(theme[0])
 
     # Display the title
     title = FONT.render("Super Tic Tac Toe", True, theme[1])
-    title_rect = title.get_rect(center=(LENGTH//2, LENGTH//4))
+    title_rect = title.get_rect(center=(LENGTH // 2, LENGTH // 4))
     screen.blit(title, title_rect)
 
     # Display the menu options
     for i, option in enumerate(menu_options):
         text = FONT.render(option, True, theme[1])
-        text_rect = text.get_rect(center=(LENGTH//2, LENGTH//2 + i*LENGTH//10))
+        text_rect = text.get_rect(center=(LENGTH // 2, LENGTH // 2 + i * LENGTH // 10))
         screen.blit(text, text_rect)
 
     # Update the display
     pygame.display.update()
+
 
 # Define function to display instructions
 def display_instructions():
@@ -106,7 +104,7 @@ def display_instructions():
     screen.fill(theme[0])
 
     # Set font and font size
-    font = pygame.font.Font(None, LENGTH//35)
+    font = pygame.font.Font(None, LENGTH // 35)
 
     # Create text objects
     title_text = FONT.render("Instructions", True, theme[1])
@@ -119,13 +117,18 @@ def display_instructions():
         "6. If a player is forced to play in a grid that has already been won, they can play in any grid.",
         "7. If a player is forced to play in a grid that has no empty cells, they can play in any grid.",
         "8. The game ends in a tie if all grids are full and there is no winner.",
-        "9. Press the 'Return to Menu' button to return to the main menu."
+        "9. Press the 'Return to Menu' button to return to the main menu.",
     ]
     rule_texts = [font.render(rule, True, theme[1]) for rule in rules]
 
     # Set text positions
-    title_pos = title_text.get_rect(center=(LENGTH//2, LENGTH//10))
-    rule_pos = [rule_texts[i].get_rect(topleft=(LENGTH//20, LENGTH//5 + i*(font.get_height()+SPACING))) for i in range(len(rules))]
+    title_pos = title_text.get_rect(center=(LENGTH // 2, LENGTH // 10))
+    rule_pos = [
+        rule_texts[i].get_rect(
+            topleft=(LENGTH // 20, LENGTH // 5 + i * (font.get_height() + SPACING))
+        )
+        for i in range(len(rules))
+    ]
 
     # Draw text objects on screen
     screen.blit(title_text, title_pos)
@@ -133,9 +136,9 @@ def display_instructions():
         screen.blit(rule_text, rule_pos[i])
 
     # Draw return button
-    font = pygame.font.Font(None, LENGTH//20)
+    font = pygame.font.Font(None, LENGTH // 20)
     return_button = font.render("Return to Menu", True, theme[1])
-    return_rect = return_button.get_rect(center=(LENGTH//2, LENGTH//1.2))
+    return_rect = return_button.get_rect(center=(LENGTH // 2, LENGTH // 1.2))
     screen.blit(return_button, return_rect)
 
     # Update the display
@@ -150,6 +153,7 @@ def display_instructions():
                 if return_rect.collidepoint(event.pos):
                     menu_screen()
 
+
 # Define function to change the theme
 def change_theme():
     global theme_num
@@ -163,36 +167,55 @@ def change_theme():
         theme_num = 1
         return theme1
 
+
 # Define function to quit the game
 def quit_game():
     pygame.quit()
     quit()
 
+
 # Draw the Tic Tac Toe board
 def draw_board():
     # Draw big horizontal lines
-    pygame.draw.line(screen, theme[1], (0, THIRD), (LENGTH, THIRD), LENGTH//100)
-    pygame.draw.line(screen, theme[1], (0, 2*THIRD), (LENGTH, 2*THIRD), LENGTH//100)
+    pygame.draw.line(screen, theme[1], (0, THIRD), (LENGTH, THIRD), LENGTH // 100)
+    pygame.draw.line(
+        screen, theme[1], (0, 2 * THIRD), (LENGTH, 2 * THIRD), LENGTH // 100
+    )
     # Draw big vertical lines
-    pygame.draw.line(screen, theme[1], (THIRD, 0), (THIRD, LENGTH), LENGTH//100)
-    pygame.draw.line(screen, theme[1], (2*THIRD, 0), (2*THIRD, LENGTH), LENGTH//100)
+    pygame.draw.line(screen, theme[1], (THIRD, 0), (THIRD, LENGTH), LENGTH // 100)
+    pygame.draw.line(
+        screen, theme[1], (2 * THIRD, 0), (2 * THIRD, LENGTH), LENGTH // 100
+    )
     # Draw small tic tac toe boards
-    x = 1 # Honestly, I forgot what this is, but if I remove it the board breaks
+    x = 1  # Honestly, I forgot what this is, but if I remove it the board breaks
     for smallStep in range(6):
-            for bigStep in range(3):
-                # Draw small horizontal lines
-                pygame.draw.line(screen, theme[1], (SPACING + THIRD*bigStep, (smallStep+x)*NINTH), (THIRD*(bigStep+1) - SPACING, (smallStep+x)*NINTH), LENGTH//200)
-                # Draw small vertical lines
-                pygame.draw.line(screen, theme[1], ((smallStep+x)*NINTH, SPACING + THIRD*bigStep), ((smallStep+x)*NINTH, THIRD*(bigStep+1) - SPACING), LENGTH//200)
-            if smallStep % 2 == 1:
-                x += 1
+        for bigStep in range(3):
+            # Draw small horizontal lines
+            pygame.draw.line(
+                screen,
+                theme[1],
+                (SPACING + THIRD * bigStep, (smallStep + x) * NINTH),
+                (THIRD * (bigStep + 1) - SPACING, (smallStep + x) * NINTH),
+                LENGTH // 200,
+            )
+            # Draw small vertical lines
+            pygame.draw.line(
+                screen,
+                theme[1],
+                ((smallStep + x) * NINTH, SPACING + THIRD * bigStep),
+                ((smallStep + x) * NINTH, THIRD * (bigStep + 1) - SPACING),
+                LENGTH // 200,
+            )
+        if smallStep % 2 == 1:
+            x += 1
+
 
 # Define function to handle user input
 def handle_input():
     # Check if the Pygame display is still open
     if pygame.display.get_surface() is None:
         return
-    
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -200,21 +223,28 @@ def handle_input():
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Get the position of the mouse click
             pos = pygame.mouse.get_pos()
-                
+
             # Check if the mouse click is on a menu option
             for i, option in enumerate(menu_options):
-                text_rect = FONT.render(option, True, theme[0]).get_rect(center=(LENGTH//2, LENGTH//2 + i*LENGTH//10))
+                text_rect = FONT.render(option, True, theme[0]).get_rect(
+                    center=(LENGTH // 2, LENGTH // 2 + i * LENGTH // 10)
+                )
                 if text_rect.collidepoint(pos):
                     return option
     return None
 
+
 # Handle player moves
 def handle_move(bigRow, bigCol, smolRow, smolCol, player):
-    if board[bigRow][bigCol][smolRow][smolCol] == 0 and AI_X.smol_check_winner(board, bigRow, bigCol) == None:
+    if (
+        board[bigRow][bigCol][smolRow][smolCol] == 0
+        and AI_X.smol_check_winner(board, bigRow, bigCol) == None
+    ):
         board[bigRow][bigCol][smolRow][smolCol] = player
         return True
     else:
         return False
+
 
 # Get a list of playable small boards
 def playable_smol_boards(forceRow, forceCol):
@@ -228,17 +258,37 @@ def playable_smol_boards(forceRow, forceCol):
         smol_boards.append([forceRow, forceCol])
     return smol_boards
 
+
 # Display the winner of a small board
 def display_smol_winner(bigRow, bigCol, winner):
     if winner == 1:
         # Draw a circle
-        pygame.draw.circle(screen, theme[4], (bigCol*THIRD + NINTH+BIGSPACING, bigRow*THIRD + NINTH+BIGSPACING), LENGTH//8, LENGTH//100)
+        pygame.draw.circle(
+            screen,
+            theme[4],
+            (bigCol * THIRD + NINTH + BIGSPACING, bigRow * THIRD + NINTH + BIGSPACING),
+            LENGTH // 8,
+            LENGTH // 100,
+        )
     elif winner == 2:
         # Draw an X
-        # Top left to bottom right 
-        pygame.draw.line(screen, theme[3], (bigCol*THIRD + BIGSPACING, bigRow*THIRD + BIGSPACING), ((bigCol+1)*THIRD - BIGSPACING, (bigRow+1)*THIRD - BIGSPACING), SPACING)
+        # Top left to bottom right
+        pygame.draw.line(
+            screen,
+            theme[3],
+            (bigCol * THIRD + BIGSPACING, bigRow * THIRD + BIGSPACING),
+            ((bigCol + 1) * THIRD - BIGSPACING, (bigRow + 1) * THIRD - BIGSPACING),
+            SPACING,
+        )
         # Bottom left to top right
-        pygame.draw.line(screen, theme[3], ((bigCol+1)*THIRD - BIGSPACING, bigRow*THIRD + BIGSPACING), (bigCol*THIRD + BIGSPACING, (bigRow+1)*THIRD - BIGSPACING), SPACING)
+        pygame.draw.line(
+            screen,
+            theme[3],
+            ((bigCol + 1) * THIRD - BIGSPACING, bigRow * THIRD + BIGSPACING),
+            (bigCol * THIRD + BIGSPACING, (bigRow + 1) * THIRD - BIGSPACING),
+            SPACING,
+        )
+
 
 # Display the winner
 def display_winner(winner):
@@ -249,14 +299,20 @@ def display_winner(winner):
         text = FONT.render(f"O wins!", True, theme[4])
     elif winner == 2:
         text = FONT.render(f"X wins!", True, theme[3])
-    text_rect = text.get_rect(center=(LENGTH//2, LENGTH//2))
+    text_rect = text.get_rect(center=(LENGTH // 2, LENGTH // 2))
     screen.blit(text, text_rect)
     draw_board()
     pygame.display.update()
 
-#declared variables outside of function to prevent them from resetting every time the function is called
-player = 2 # 1 is O, 2 is X
-forceRow, forceCol = -1, -1 # -1 means no force, and they correspond to the move that the next player must make
+
+# declared variables outside of function to prevent them from resetting every time the function is called
+player = 2  # 1 is O, 2 is X
+forceRow, forceCol = (
+    -1,
+    -1,
+)  # -1 means no force, and they correspond to the move that the next player must make
+
+
 def start_game():
     # Clear the screen
     screen.fill(theme[0])
@@ -264,18 +320,20 @@ def start_game():
     global player, forceRow, forceCol
     game_over = False
     while not game_over:
-        for event in pygame.event.get(): # aka whenever there's an event
+        for event in pygame.event.get():  # aka whenever there's an event
             if event.type == pygame.QUIT:
                 game_over = True
-            elif event.type == pygame.MOUSEBUTTONDOWN: # click
+            elif event.type == pygame.MOUSEBUTTONDOWN:  # click
                 if player == 1:
                     bigRow = int(event.pos[1] // THIRD)
                     bigCol = int(event.pos[0] // THIRD)
                     smolRow = int((event.pos[1] // NINTH) % 3)
                     smolCol = int((event.pos[0] // NINTH) % 3)
-                    if bigCol == forceCol and bigRow == forceRow: # essentially, if the player in the highlighted board
+                    if (
+                        bigCol == forceCol and bigRow == forceRow
+                    ):  # essentially, if the player in the highlighted board
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            player = 2 # switch players
+                            player = 2  # switch players
                             # this next part is self explanatory right?
                             if AI_X.smol_check_winner(board, smolRow, smolCol) == None:
                                 forceRow = smolRow
@@ -314,39 +372,84 @@ def start_game():
                                 forceCol = smolCol
                             else:
                                 forceRow = -1
-                                forceCol = -1  
+                                forceCol = -1
         # Draw the game board
         screen.fill(theme[0])
         for bigRow in range(3):
             for bigCol in range(3):
                 # checks if there's a winner in the small board and displays it
                 if AI_X.smol_check_winner(board, bigRow, bigCol) != None:
-                    display_smol_winner(bigRow, bigCol, AI_X.smol_check_winner(board, bigRow, bigCol))
+                    display_smol_winner(
+                        bigRow, bigCol, AI_X.smol_check_winner(board, bigRow, bigCol)
+                    )
                 # makes highlighted board
                 for i in playable_smol_boards(forceRow, forceCol):
                     if [bigRow, bigCol] == i:
-                        pygame.draw.rect(screen, theme[2], (bigCol*THIRD + SPACING - 5, bigRow*THIRD + SPACING - 5, THIRD - 2*SPACING + 10, THIRD - 2*SPACING + 10))
-                
+                        pygame.draw.rect(
+                            screen,
+                            theme[2],
+                            (
+                                bigCol * THIRD + SPACING - 5,
+                                bigRow * THIRD + SPACING - 5,
+                                THIRD - 2 * SPACING + 10,
+                                THIRD - 2 * SPACING + 10,
+                            ),
+                        )
+
                 # draws the pieces
                 for smolRow in range(3):
                     for smolCol in range(3):
                         # draws O's
                         if board[bigRow][bigCol][smolRow][smolCol] == 1:
-                            pygame.draw.circle(screen, theme[4], (BIGSPACING+bigCol*THIRD+smolCol*NINTH, BIGSPACING+bigRow*THIRD+smolRow*NINTH), BIGSPACING - SPACING, LENGTH//200)
+                            pygame.draw.circle(
+                                screen,
+                                theme[4],
+                                (
+                                    BIGSPACING + bigCol * THIRD + smolCol * NINTH,
+                                    BIGSPACING + bigRow * THIRD + smolRow * NINTH,
+                                ),
+                                BIGSPACING - SPACING,
+                                LENGTH // 200,
+                            )
                         # draws X's
                         elif board[bigRow][bigCol][smolRow][smolCol] == 2:
-                            pygame.draw.line(screen, theme[3], (SPACING+bigCol*THIRD+smolCol*NINTH, SPACING+bigRow*THIRD+smolRow*NINTH), (LENGTH//10+bigCol*THIRD+smolCol*NINTH, LENGTH//10+bigRow*THIRD+smolRow*NINTH), LENGTH//200)
-                            pygame.draw.line(screen, theme[3], (LENGTH//10+bigCol*THIRD+smolCol*NINTH, SPACING+bigRow*THIRD+smolRow*NINTH), (SPACING+bigCol*THIRD+smolCol*NINTH, LENGTH//10+bigRow*THIRD+smolRow*NINTH), LENGTH//200)
-        
+                            pygame.draw.line(
+                                screen,
+                                theme[3],
+                                (
+                                    SPACING + bigCol * THIRD + smolCol * NINTH,
+                                    SPACING + bigRow * THIRD + smolRow * NINTH,
+                                ),
+                                (
+                                    LENGTH // 10 + bigCol * THIRD + smolCol * NINTH,
+                                    LENGTH // 10 + bigRow * THIRD + smolRow * NINTH,
+                                ),
+                                LENGTH // 200,
+                            )
+                            pygame.draw.line(
+                                screen,
+                                theme[3],
+                                (
+                                    LENGTH // 10 + bigCol * THIRD + smolCol * NINTH,
+                                    SPACING + bigRow * THIRD + smolRow * NINTH,
+                                ),
+                                (
+                                    SPACING + bigCol * THIRD + smolCol * NINTH,
+                                    LENGTH // 10 + bigRow * THIRD + smolRow * NINTH,
+                                ),
+                                LENGTH // 200,
+                            )
+
         # Check for win
         if AI_X.check_winner(board) != None:
-                    display_winner(AI_X.check_winner(board))
+            display_winner(AI_X.check_winner(board))
         draw_board()
         # print(theme)
 
         # Update the display
         pygame.display.update()
         pass
+
 
 # Define menu screen function
 def menu_screen():
@@ -367,6 +470,7 @@ def menu_screen():
             theme = change_theme()
         elif option == "Quit":
             pygame.quit()
+
 
 # Call the menu screen function to start the game
 menu_screen()

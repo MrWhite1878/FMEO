@@ -1,6 +1,7 @@
 # credit for teaching the basics:
 # https://www.youtube.com/watch?v=l-hh51ncgDI
 
+
 # Check if the game has been won
 def check_win(board):
     # Check rows
@@ -27,43 +28,47 @@ def check_win(board):
     # If no win condition is met, return False
     return False
 
+
 # defining eval boarders
-evals ={
-    "X": -10,
-    "O": 10, # inverted
-    "Tie": 0
-}
+evals = {"X": -10, "O": 10, "Tie": 0}  # inverted
+
 
 # returns if its winning loss or tie
 def evaluate(board):
     return evals[check_win(board)]
 
+
 # minimax algorithm
 def minimax(board, depth, alpha, beta, player, depthCount):
-    '''
+    """
     board: starting node is the board
     depth: how deep into the tree is the node
     alpha: the new current best eval for X
     beta: best eval for O
     player: the maximizing player
     depthCount: keeps track of how deep into the tree the node is
-    '''
-    if depth == 0 or check_win(board): # reachs max depth or winning board
-        return [evaluate(board), depthCount] # returns how deep into the tree it had to go
-    
+    """
+    if depth == 0 or check_win(board):  # reachs max depth or winning board
+        return [
+            evaluate(board),
+            depthCount,
+        ]  # returns how deep into the tree it had to go
+
     # O is the maximizing player
     if player == "O":
         depthCount += 1
-        maxEval = -1000 # anything < -10 should work
+        maxEval = -1000  # anything < -10 should work
         for row in range(3):
             for col in range(3):
                 if board[row][col] == " ":
                     board[row][col] = player
-                    eval = minimax(board, depth - 1, alpha, beta, "X", depthCount)[0] #all we care about it eval
+                    eval = minimax(board, depth - 1, alpha, beta, "X", depthCount)[
+                        0
+                    ]  # all we care about it eval
                     board[row][col] = " "
                     maxEval = max(maxEval, eval)
                     alpha = max(alpha, eval)
-                    if beta <= alpha: # no need to continue down the tree
+                    if beta <= alpha:  # no need to continue down the tree
                         break
         return [maxEval, depthCount]
     # see above section for explanation
@@ -82,7 +87,8 @@ def minimax(board, depth, alpha, beta, player, depthCount):
                         break
         return [minEval, depthCount]
 
-# returns the best move 
+
+# returns the best move
 def get_move(board, player):
     bestEval = 1000
     bestDepth = 100
@@ -98,7 +104,9 @@ def get_move(board, player):
                     bestEval = moveEval
                     bestDepth = moveDepth
                     bestMove = [row, col]
-                elif moveEval == bestEval and moveDepth < bestDepth: # if its just as good, it chooses the fastest path
+                elif (
+                    moveEval == bestEval and moveDepth < bestDepth
+                ):  # if its just as good, it chooses the fastest path
                     bestEval = moveEval
                     bestDepth = moveDepth
                     bestMove = [row, col]

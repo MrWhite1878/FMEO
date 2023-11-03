@@ -1,5 +1,6 @@
 # please see TTT_AI_X.py for better comments
 
+
 # Check if the game has been won
 def check_win(board):
     # Check rows
@@ -26,22 +27,25 @@ def check_win(board):
     # If no win condition is met, return False
     return False
 
+
 # defining eval boarders
-evals ={
+evals = {
     "X": 10,
-    "O": -10, #because we want o to win
+    "O": -10,  # because we want o to win
     "Tie": 0,
 }
+
 
 # returns if its winning loss or tie
 def evaluate(board):
     return evals[check_win(board)]
 
+
 # minimax algorithm
 def minimax(board, depth, alpha, beta, player, depthCount):
     if depth == 0 or check_win(board):
         return [evaluate(board), depthCount]
-    
+
     if player == "X":
         depthCount += 1
         maxEval = -1000
@@ -71,13 +75,14 @@ def minimax(board, depth, alpha, beta, player, depthCount):
                         break
         return [minEval, depthCount]
 
-# returns the best move 
+
+# returns the best move
 def get_move(board, player):
     bestEval = 1000
     bestDepth = 100
     bestMove = [-1, -1]
     for row in range(3):
-        for col in range(3):    
+        for col in range(3):
             if board[row][col] == " ":
                 board[row][col] = player
                 moveEval, moveDepth = minimax(board, 9, -1000, 1000, "X", 0)
