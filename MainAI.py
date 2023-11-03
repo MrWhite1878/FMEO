@@ -265,6 +265,12 @@ def display_winner(winner):
     draw_board()
     pygame.display.update()
 
+def print_board(board):
+    print()
+    for i in range(3):
+        for j in range(3):
+            print(board[i][j])
+
 #declared variables outside of function to prevent them from resetting every time the function is called
 player = 2 # 1 is O, 2 is X
 forceRow, forceCol = -1, -1 # -1 means no force, and they correspond to the move that the next player must make
@@ -283,7 +289,8 @@ def start_game():
                 game_over = True
             elif event.type == pygame.MOUSEBUTTONDOWN: # click
                 if player == 1:
-                    print("\nO's turn, ", "Turn count:", turnCount, ", Board Evaluation:", AI_X.evaluate(board))
+                    print_board(board)
+                    print("O's turn, ", "Turn count:", turnCount, ", Board Evaluation:", AI_X.evaluate(board))
                     turnCount += 1
                     bigRow = int(event.pos[1] // THIRD)
                     bigCol = int(event.pos[0] // THIRD)
@@ -312,7 +319,8 @@ def start_game():
                                 forceCol = -1
             # print("got here")
             elif player == 2 and (pygame.display.get_surface() is not None):
-                print("\nX's turn, ", "Turn count:", turnCount, ", Board Evaluation:", AI_X.evaluate(board))
+                print_board(board)
+                print("X's turn, ", "Turn count:", turnCount, ", Board Evaluation:", AI_X.evaluate(board))
                 if turnCount < 3:
                     depth = 1
                 elif forceRow == -1 and forceCol == -1:
