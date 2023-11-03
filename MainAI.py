@@ -69,7 +69,6 @@ menu_options = ["Start Game", "Instructions", "Theme", "Quit"]
 fyi = {0: "Empty", 1: "O", 2: "X"}
 
 # Create the game board
-# It's staggered like this because python cares about whitespace, and this is the easiest way to visualize it
 board = [
     [
         [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
