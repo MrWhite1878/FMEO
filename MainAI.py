@@ -266,13 +266,12 @@ def display_winner(winner):
     pygame.display.update()
 
 def print_board(board):
-    print()
-    for a in board:
-        for b in a:
-            for c in b:
-                print(c, end = " ")
-            print("\t", end = "")
-        print()
+    for i in range(3):
+        for j in range(3):
+            print(board[i][j])
+        print("\n")
+    print("\n")
+
 
 #declared variables outside of function to prevent them from resetting every time the function is called
 player = 2 # 1 is O, 2 is X
