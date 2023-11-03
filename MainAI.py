@@ -267,9 +267,12 @@ def display_winner(winner):
 
 def print_board(board):
     print()
-    for i in range(3):
-        for j in range(3):
-            print(board[i][j])
+    for a in board:
+        for b in a:
+            for c in b:
+                print(c, end = " ")
+            print("\t", end = "")
+        print()
 
 #declared variables outside of function to prevent them from resetting every time the function is called
 player = 2 # 1 is O, 2 is X
@@ -324,9 +327,9 @@ def start_game():
                 if turnCount < 3:
                     depth = 1
                 elif forceRow == -1 and forceCol == -1:
-                    depth = 2
-                else:
                     depth = 3
+                else:
+                    depth = 5
                 bigRow, bigCol, smolRow, smolCol = AI_X.get_move(board, depth, player, forceRow, forceCol)
                 MoveO.append([bigRow, bigCol, smolRow, smolCol])
                 turnCount += 1
@@ -370,12 +373,12 @@ def start_game():
             display_winner(AI_X.check_winner(board))
             print("\nWinner:", fyi[AI_X.check_winner(board)])
             print("Recap:")
-            print("  X Moves          O Moves")
+            print("     X Moves          O Moves")
             for i in range(len(MoveX)):
                 try:
-                    print(MoveX[i], "\t", MoveO[i])
+                    print(i+1, ". ", MoveX[i], "\t", MoveO[i])
                 except IndexError:
-                    print(MoveX[i])
+                    print(i+1, ". ", MoveX[i])
             pygame.time.wait(5000)
 
         draw_board()
