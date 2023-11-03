@@ -5,7 +5,17 @@
 # Based on TTT AI, please see that file for more info
 
 # Check for a winner in a small board
-import random
+from treelib import Node, Tree
+
+tree = Tree()
+
+
+def print_board(board):
+    for i in range(3):
+        for j in range(3):
+            print("\t", board[i][j], "\t", end="")
+        print()
+
 
 
 def smol_check_winner(board, bigRow, bigCol):
@@ -120,7 +130,7 @@ def evaluate(board):
         score = 0
         bigVal = 50
         smallVal = 2
-        modifier = 0.33
+        modifier = 0.67
         pavlovs = []
         won_biggies = []
 
@@ -518,12 +528,9 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
     forcedCol: if the player is forced to play in a certain col
     """
 
-    if depth == 0 or (
-        check_winner(board) != False
-    ):  # reachs max depth or winning board
-        return evaluate(board)[
-            0
-        ]  # returns how deep into the tree it had to go and node value
+    if depth == 0 or (check_winner(board) != False):  # reachs max depth or winning board
+        # print("\tEval:", evaluate(board)[0], ", Depth:", depth, ", Board:", print_board(board))
+        return evaluate(board)[0]  # returns how deep into the tree it had to go and node value
 
     possible_moves = []
     # O is the maximizing player
@@ -545,6 +552,14 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
                 eval = minimax(board, depth - 1, alpha, beta, 2, row, col)
                 board[bigRow][bigCol][row][col] = 0
                 maxEval = max(maxEval, eval)
+                '''print(
+                    "\tEval:",
+                    eval,
+                    ", Depth:",
+                    depth,
+                    ", Move:",
+                    [bigRow, bigCol, row, col],
+                )'''
                 if alpha > beta:  # no need to continue down the tree
                     # print("pruned")
                     break
@@ -560,6 +575,14 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
                 eval = minimax(board, depth - 1, alpha, beta, 2, row, col)
                 board[forcedRow][forcedCol][row][col] = 0
                 maxEval = max(maxEval, eval)
+                '''print(
+                    "\tEval:",
+                    eval,
+                    ", Depth:",
+                    depth,
+                    ", Move:",
+                    [bigRow, bigCol, row, col],
+                )'''
                 if alpha > beta:  # no need to continue down the tree
                     # print("pruned")
                     break
@@ -586,6 +609,14 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
                 board[bigRow][bigCol][row][col] = 0
                 maxEval = min(maxEval, eval)
                 beta = min(alpha, eval)
+                '''print(
+                    "\tEval:",
+                    eval,
+                    ", Depth:",
+                    depth,
+                    ", Move:",
+                    [bigRow, bigCol, row, col],
+                )'''
                 if alpha > beta:  # no need to continue down the tree
                     # print("pruned")
                     break
@@ -602,6 +633,14 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
                 board[forcedRow][forcedCol][row][col] = 0
                 minEval = min(minEval, eval)
                 beta = min(alpha, eval)
+                '''print(
+                    "\tEval:",
+                    eval,
+                    ", Depth:",
+                    depth,
+                    ", Move:",
+                    [bigRow, bigCol, row, col],
+                )'''
                 if alpha > beta:  # no need to continue down the tree
                     # print("pruned")
                     break
@@ -610,10 +649,14 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
 
 
 # returns the best move
+cnt = -1
 def get_move(board, depth, player, forcedRow, forcedCol):
-    # print("got here")
+    global cnt
     bestEval = 1000
     bestMove = [-1, -1, -1, -1]
+    cnt += 1
+    rootID = "root" + str(cnt)
+    tree.create_node(rootID, rootID)
     if forcedRow == -1 and forcedCol == -1:
         for bigRow in range(3):
             for bigCol in range(3):
@@ -625,14 +668,14 @@ def get_move(board, depth, player, forcedRow, forcedCol):
                         ):
                             board[bigRow][bigCol][row][col] = player
                             moveEval = minimax(board, depth, -1000, 1000, 1, row, col)
-                            print(
+                            '''print(
                                 "Eval:",
                                 moveEval,
                                 ", Depth:",
                                 depth,
                                 ", Move:",
                                 [bigRow, bigCol, row, col],
-                            )
+                            )'''
                             board[bigRow][bigCol][row][col] = 0
                             if moveEval < bestEval:
                                 bestEval = moveEval
@@ -645,17 +688,19 @@ def get_move(board, depth, player, forcedRow, forcedCol):
                 if board[bigRow][bigCol][row][col] == 0:
                     board[bigRow][bigCol][row][col] = player
                     moveEval = minimax(board, depth, -1000, 1000, 1, row, col)
-                    print(
+                    '''print(
                         "Eval:",
                         moveEval,
                         ", Depth:",
                         depth,
                         ", Move:",
                         [bigRow, bigCol, row, col],
-                    )
+                    )'''
                     board[bigRow][bigCol][row][col] = 0
                     if moveEval < bestEval:
                         bestEval = moveEval
                         bestMove = [bigRow, bigCol, row, col]
     print("Move: ", bestMove)
+    tree.create_node(str(bestMove), str(bestMove), parent=rootID)
+    tree.show()
     return bestMove

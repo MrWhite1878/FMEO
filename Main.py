@@ -329,6 +329,7 @@ def start_game():
                     bigCol = int(event.pos[0] // THIRD)
                     smolRow = int((event.pos[1] // NINTH) % 3)
                     smolCol = int((event.pos[0] // NINTH) % 3)
+                    # print(bigRow, bigCol, smolRow, smolCol)
                     if (
                         bigCol == forceCol and bigRow == forceRow
                     ):  # essentially, if the player in the highlighted board
@@ -441,7 +442,7 @@ def start_game():
                             )
 
         # Check for win
-        if AI_X.check_winner(board) != None:
+        if AI_X.check_winner(board):
             display_winner(AI_X.check_winner(board))
         draw_board()
         # print(theme)

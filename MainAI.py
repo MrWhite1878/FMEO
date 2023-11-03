@@ -319,14 +319,6 @@ def display_winner(winner):
     pygame.display.update()
 
 
-def print_board(board):
-    for i in range(3):
-        for j in range(3):
-            print(board[i][j])
-        print("\n")
-    print("\n")
-
-
 # declared variables outside of function to prevent them from resetting every time the function is called
 player = 2  # 1 is O, 2 is X
 forceRow, forceCol = (
@@ -350,25 +342,25 @@ def start_game():
                 game_over = True
             elif event.type == pygame.MOUSEBUTTONDOWN:  # click
                 if player == 1:
-                    print_board(board)
-                    print(
-                        "O's turn, ",
-                        "Turn count:",
-                        turnCount,
-                        ", Board Evaluation:",
-                        AI_X.evaluate(board),
-                    )
-                    turnCount += 1
                     bigRow = int(event.pos[1] // THIRD)
                     bigCol = int(event.pos[0] // THIRD)
                     smolRow = int((event.pos[1] // NINTH) % 3)
                     smolCol = int((event.pos[0] // NINTH) % 3)
-                    print("Move:", [bigRow, bigCol, smolRow, smolCol])
-                    MoveX.append([bigRow, bigCol, smolRow, smolCol])
                     if (
                         bigCol == forceCol and bigRow == forceRow
                     ):  # essentially, if the player in the highlighted board
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                            AI_X.print_board(board)
+                            print(
+                                "O's turn, ",
+                                "Turn count:",
+                                turnCount,
+                                ", Board Evaluation:",
+                                AI_X.evaluate(board),
+                            )
+                            turnCount += 1
+                            print("Move:", [bigRow, bigCol, smolRow, smolCol])
+                            MoveX.append([bigRow, bigCol, smolRow, smolCol])
                             player = 2  # switch players
                             # this next part is self explanatory right?
                             if AI_X.smol_check_winner(board, smolRow, smolCol) == None:
@@ -379,6 +371,17 @@ def start_game():
                                 forceCol = -1
                     elif forceRow == -1 and forceCol == -1:
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                            AI_X.print_board(board)
+                            print(
+                                "O's turn, ",
+                                "Turn count:",
+                                turnCount,
+                                ", Board Evaluation:",
+                                AI_X.evaluate(board),
+                            )
+                            turnCount += 1
+                            print("Move:", [bigRow, bigCol, smolRow, smolCol])
+                            MoveX.append([bigRow, bigCol, smolRow, smolCol])
                             player = 2
                             if AI_X.smol_check_winner(board, smolRow, smolCol) == None:
                                 forceRow = smolRow
@@ -388,7 +391,7 @@ def start_game():
                                 forceCol = -1
             # print("got here")
             elif player == 2 and (pygame.display.get_surface() is not None):
-                print_board(board)
+                AI_X.print_board
                 print(
                     "X's turn, ",
                     "Turn count:",
@@ -399,9 +402,9 @@ def start_game():
                 if turnCount < 3:
                     depth = 1
                 elif forceRow == -1 and forceCol == -1:
-                    depth = 3
+                    depth = 1
                 else:
-                    depth = 5
+                    depth = 1  
                 bigRow, bigCol, smolRow, smolCol = AI_X.get_move(
                     board, depth, player, forceRow, forceCol
                 )
@@ -494,9 +497,17 @@ def start_game():
             print("     X Moves          O Moves")
             for i in range(len(MoveX)):
                 try:
-                    print(i + 1, ". ", MoveX[i], "\t", MoveO[i])
+                    if i < 10:
+                        print(i + 1, ".  ", MoveX[i], "\t", MoveO[i], sep="")
+                    else:
+                        print(i + 1, ". ", MoveX[i], "\t", MoveO[i], sep="")
                 except IndexError:
-                    print(i + 1, ". ", MoveX[i])
+                    if i < 10:
+                        print(i + 1, ".  ", MoveX[i], sep="")
+                    else:
+                        print(i + 1, ". ", MoveX[i], sep="")
+            print("Moves X", MoveX)
+            print("Moves O", MoveO)
             pygame.time.wait(5000)
 
         draw_board()
