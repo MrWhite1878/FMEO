@@ -57,6 +57,13 @@ pygame.display.set_caption("Super Tic Tac Toe")
 # Define menu options
 menu_options = ["Start Game", "Instructions", "Theme", "Quit"]
 
+# For the Reader ;)
+fyi = {
+    0 : "Empty",
+    1 : "O",
+    2 : "X"
+}
+
 # Create the game board
 # It's staggered like this because python cares about whitespace, and this is the easiest way to visualize it
 board = [[[[0, 0, 0], 
@@ -262,12 +269,14 @@ def display_winner(winner):
 player = 2 # 1 is O, 2 is X
 forceRow, forceCol = -1, -1 # -1 means no force, and they correspond to the move that the next player must make
 turnCount = 0
+MoveX, MoveO = [], []
+game_over = False
+won = 0
 def start_game():
     # Clear the screen
     screen.fill(theme[0])
     # Game loop
-    global player, forceRow, forceCol, turnCount
-    game_over = False
+    global player, forceRow, forceCol, turnCount, MoveX, MoveO, game_over, won
     while not game_over:
         for event in pygame.event.get(): # aka whenever there's an event
             if event.type == pygame.QUIT:
@@ -281,6 +290,7 @@ def start_game():
                     smolRow = int((event.pos[1] // NINTH) % 3)
                     smolCol = int((event.pos[0] // NINTH) % 3)
                     print("Move:", [bigRow, bigCol, smolRow, smolCol])
+                    MoveX.append([bigRow, bigCol, smolRow, smolCol])
                     if bigCol == forceCol and bigRow == forceRow: # essentially, if the player in the highlighted board
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
                             player = 2 # switch players
@@ -306,10 +316,11 @@ def start_game():
                 if turnCount < 3:
                     depth = 1
                 elif forceRow == -1 and forceCol == -1:
-                    depth = 3
+                    depth = 2
                 else:
-                    depth = 5
+                    depth = 3
                 bigRow, bigCol, smolRow, smolCol = AI_X.get_move(board, depth, player, forceRow, forceCol)
+                MoveO.append([bigRow, bigCol, smolRow, smolCol])
                 turnCount += 1
                 # print(bigRow, bigCol, smolRow, smolCol)
                 if bigCol == forceCol and bigRow == forceRow:
@@ -347,7 +358,18 @@ def start_game():
                             pygame.draw.line(screen, theme[3], (SPACING+bigCol*THIRD+smolCol*NINTH, SPACING+bigRow*THIRD+smolRow*NINTH), (LENGTH//10+bigCol*THIRD+smolCol*NINTH, LENGTH//10+bigRow*THIRD+smolRow*NINTH), LENGTH//200)
                             pygame.draw.line(screen, theme[3], (LENGTH//10+bigCol*THIRD+smolCol*NINTH, SPACING+bigRow*THIRD+smolRow*NINTH), (SPACING+bigCol*THIRD+smolCol*NINTH, LENGTH//10+bigRow*THIRD+smolRow*NINTH), LENGTH//200)
         if AI_X.check_winner(board):
-                    display_winner(AI_X.check_winner(board))
+            game_over = True
+            display_winner(AI_X.check_winner(board))
+            print("\nWinner:", fyi[AI_X.check_winner(board)])
+            print("Recap:")
+            print("  X Moves          O Moves")
+            for i in range(len(MoveX)):
+                try:
+                    print(MoveX[i], "\t", MoveO[i])
+                except IndexError:
+                    print(MoveX[i])
+            pygame.time.wait(5000)
+
         draw_board()
         # print(theme)
 
