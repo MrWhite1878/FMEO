@@ -197,7 +197,7 @@ def evaluate(board):
 # assigns each board a value, and then it chooses the best move based on the values
 # The alpha beta pruning is a way to make the alg more efficient by not checking moves that
 # are obviously bad.
-def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol):
+def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
     '''
     Parameters:
     board: starting node is the board
@@ -205,18 +205,16 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
     alpha: the new current best eval for X
     beta: best eval for O
     player: the maximizing player
-    depthCount: keeps track of how deep into the tree the node is
     forcedRow: if the player is forced to play in a certain row
     forcedCol: if the player is forced to play in a certain col
     '''
 
     if depth == 0 or (check_winner(board) != False): # reachs max depth or winning board
-        return [evaluate(board), depthCount] # returns how deep into the tree it had to go and node value
+        return evaluate(board) # returns how deep into the tree it had to go and node value
     
     possible_moves = []
     # O is the maximizing player
     if player == 1:
-        depthCount += 1
         maxEval = -1000 # anything < -500 should work
         if forcedRow == -1 and forcedCol == -1:
             for bigRow in range(3):
@@ -228,7 +226,7 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
             for child in possible_moves:
                 bigRow, bigCol, row, col = child
                 board[bigRow][bigCol][row][col] = player
-                eval = minimax(board, depth - 1, alpha, beta, 2, depthCount, row, col)[0] #all we care about is eval
+                eval = minimax(board, depth - 1, alpha, beta, 2, row, col)
                 board[bigRow][bigCol][row][col] = 0
                 maxEval = max(maxEval, eval)
                 if alpha > beta: # no need to continue down the tree
@@ -243,18 +241,17 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
             for child in possible_moves:
                 bigRow, bigCol, row, col = child
                 board[forcedRow][forcedCol][row][col] = player
-                eval = minimax(board, depth - 1, alpha, beta, 2, depthCount, row, col)[0] #all we care about is eval
+                eval = minimax(board, depth - 1, alpha, beta, 2, row, col)
                 board[forcedRow][forcedCol][row][col] = 0
                 maxEval = max(maxEval, eval)
                 if alpha > beta: # no need to continue down the tree
                     # print("pruned")
                     break
                 alpha = max(alpha, eval)
-        return [maxEval, depthCount]
+        return maxEval
     
     # see above section for explanation
     else:
-        depthCount += 1
         minEval = 1000 
         if forcedRow == -1 and forcedCol == -1:
             for bigRow in range(3):
@@ -266,7 +263,7 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
             for child in possible_moves:
                 bigRow, bigCol, row, col = child
                 board[bigRow][bigCol][row][col] = player
-                eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
+                eval = minimax(board, depth - 1, alpha, beta, 1, row, col)
                 board[bigRow][bigCol][row][col] = 0
                 maxEval = min(maxEval, eval)
                 beta = min(alpha, eval)
@@ -282,7 +279,7 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
             for child in possible_moves:
                 bigRow, bigCol, row, col = child
                 board[forcedRow][forcedCol][row][col] = player
-                eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
+                eval = minimax(board, depth - 1, alpha, beta, 1, row, col)
                 board[forcedRow][forcedCol][row][col] = 0
                 minEval = min(minEval, eval)
                 beta = min(alpha, eval)
@@ -290,13 +287,12 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
                     # print("pruned")
                     break
                 alpha = max(alpha, eval)
-        return [minEval, depthCount]
+        return minEval
 
 # returns the best move 
 def get_move(board, depth, player, forcedRow, forcedCol):
     # print("got here")
     bestEval = 1000
-    bestDepth = 1000
     bestMove = [-1, -1, -1, -1]
     if forcedRow == -1 and forcedCol == -1:
         for bigRow in range(3):
@@ -305,19 +301,11 @@ def get_move(board, depth, player, forcedRow, forcedCol):
                     for col in range(3):
                         if board[bigRow][bigCol][row][col] == 0 and smol_check_winner(board, bigRow, bigCol) == None:
                             board[bigRow][bigCol][row][col] = player
-                            # minimax (board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
-                            # print("got here")
-                            moveEval, moveDepth = minimax(board, depth, -1000, 1000, 1, 0, row, col)
-                            # print("got here")
-                            # print(board, moveEval, moveDepth)
+                            moveEval = minimax(board, depth, -1000, 1000, 1, row, col)
+                            print("Eval:", moveEval, ", Depth:", depth, ", Move:", [bigRow, bigCol, row, col])
                             board[bigRow][bigCol][row][col] = 0
                             if moveEval < bestEval:
                                 bestEval = moveEval
-                                bestDepth = moveDepth
-                                bestMove = [bigRow, bigCol, row, col]
-                            elif moveEval == bestEval and moveDepth < bestDepth: # if its just as good, it chooses the fastest path
-                                bestEval = moveEval
-                                bestDepth = moveDepth
                                 bestMove = [bigRow, bigCol, row, col]
     else:
         bigRow = forcedRow
@@ -326,15 +314,11 @@ def get_move(board, depth, player, forcedRow, forcedCol):
             for col in range(3):
                 if board[bigRow][bigCol][row][col] == 0:
                     board[bigRow][bigCol][row][col] = player
-                    moveEval, moveDepth = minimax(board, depth, -1000, 1000, 1, 0, row, col)
-                    # print(board, moveEval, moveDepth)
+                    moveEval = minimax(board, depth, -1000, 1000, 1, row, col)
+                    print("Eval:", moveEval, ", Depth:", depth, ", Move:", [bigRow, bigCol, row, col])
                     board[bigRow][bigCol][row][col] = 0
                     if moveEval < bestEval:
                         bestEval = moveEval
-                        bestDepth = moveDepth
                         bestMove = [bigRow, bigCol, row, col]
-                    elif moveEval == bestEval and moveDepth < bestDepth: # if its just as good, it chooses the fastest path
-                        bestEval = moveEval
-                        bestDepth = moveDepth
-                        bestMove = [bigRow, bigCol, row, col]
+    print("Move: ", bestMove)
     return bestMove

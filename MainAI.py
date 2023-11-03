@@ -274,12 +274,13 @@ def start_game():
                 game_over = True
             elif event.type == pygame.MOUSEBUTTONDOWN: # click
                 if player == 1:
-                    # print(AI_X.evaluate(board))
+                    print("\nO's turn, ", "Turn count:", turnCount, ", Board Evaluation:", AI_X.evaluate(board))
                     turnCount += 1
                     bigRow = int(event.pos[1] // THIRD)
                     bigCol = int(event.pos[0] // THIRD)
                     smolRow = int((event.pos[1] // NINTH) % 3)
                     smolCol = int((event.pos[0] // NINTH) % 3)
+                    print("Move:", [bigRow, bigCol, smolRow, smolCol])
                     if bigCol == forceCol and bigRow == forceRow: # essentially, if the player in the highlighted board
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
                             player = 2 # switch players
@@ -301,15 +302,13 @@ def start_game():
                                 forceCol = -1
             # print("got here")
             elif player == 2 and (pygame.display.get_surface() is not None):
-                # print(forceRow, forceCol)
-                # print(AI_X.evaluate(board))
+                print("\nX's turn, ", "Turn count:", turnCount, ", Board Evaluation:", AI_X.evaluate(board))
                 if turnCount < 3:
                     depth = 1
                 elif forceRow == -1 and forceCol == -1:
                     depth = 3
                 else:
                     depth = 5
-                
                 bigRow, bigCol, smolRow, smolCol = AI_X.get_move(board, depth, player, forceRow, forceCol)
                 turnCount += 1
                 # print(bigRow, bigCol, smolRow, smolCol)
