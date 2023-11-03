@@ -151,9 +151,9 @@ def evaluate(board):
                             score += smallVal
                         elif (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][row][col+1] == 2):
                             score -= smallVal
-                        if (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][row+1][col+1] == 1):
+                        if (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][1][1] == 1):
                             score += smallVal
-                        elif (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][row+1][col+1] == 2):
+                        elif (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][1][1] == 2):
                             score -= smallVal
                 # Reward for blocking a 2 in a row, punish for letting opponent block a 2 in a row
                 for row in range(3):
