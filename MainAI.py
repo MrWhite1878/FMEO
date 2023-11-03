@@ -274,7 +274,7 @@ def start_game():
                 game_over = True
             elif event.type == pygame.MOUSEBUTTONDOWN: # click
                 if player == 1:
-                    print(AI_X.evaluate(board))
+                    # print(AI_X.evaluate(board))
                     turnCount += 1
                     bigRow = int(event.pos[1] // THIRD)
                     bigCol = int(event.pos[0] // THIRD)
@@ -302,11 +302,13 @@ def start_game():
             # print("got here")
             elif player == 2 and (pygame.display.get_surface() is not None):
                 # print(forceRow, forceCol)
-                print(AI_X.evaluate(board))
-                if turnCount < 2:
+                # print(AI_X.evaluate(board))
+                if turnCount < 3:
                     depth = 1
-                else:
+                elif forceRow == -1 and forceCol == -1:
                     depth = 3
+                else:
+                    depth = 5
                 
                 bigRow, bigCol, smolRow, smolCol = AI_X.get_move(board, depth, player, forceRow, forceCol)
                 turnCount += 1

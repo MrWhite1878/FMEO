@@ -74,8 +74,9 @@ def evaluate(board):
     # otherwise, score the board (it gets bad)
     else:
         score = 0
-        bigVal = 10
+        bigVal = 100
         smallVal = 2
+        modifier = 0.33
 
         # Big board score
         for bigRow in range(2):
@@ -99,6 +100,11 @@ def evaluate(board):
                 score += bigVal
             elif (smol_check_winner(board, bigRow, 0) == smol_check_winner(board, bigRow, 1) == 1) and (smol_check_winner(board, bigRow, 2) == 2):
                 score -= bigVal
+            # Reward for getting two with a space between, punish for letting opponent get two with a space between
+            if (smol_check_winner(board, bigRow, 0) == smol_check_winner(board, bigRow, 2) == 1) and (smol_check_winner(board, bigRow, 1) == 0):
+                score += bigVal
+            elif (smol_check_winner(board, bigRow, 0) == smol_check_winner(board, bigRow, 2) == 2) and (smol_check_winner(board, bigRow, 1) == 0):
+                score -= bigVal
             for bigCol in range(3):
                 # Reward for getting a big board, punish for letting opponent block a big board
                 if smol_check_winner(board, bigRow, bigCol) == 1:
@@ -111,6 +117,11 @@ def evaluate(board):
                 score += bigVal
             elif (smol_check_winner(board, 0, bigCol) == smol_check_winner(board, 1, bigCol) == 1) and (smol_check_winner(board, 2, bigCol) == 2):
                 score -= bigVal
+            # Reward for getting two with a space between, punish for letting opponent get two with a space between
+            if (smol_check_winner(board, 0, bigCol) == smol_check_winner(board, 2, bigCol) == 1) and (smol_check_winner(board, 1, bigCol) == 0):
+                score += bigVal
+            elif (smol_check_winner(board, 0, bigCol) == smol_check_winner(board, 2, bigCol) == 2) and (smol_check_winner(board, 1, bigCol) == 0):
+                score -= bigVal
         # Reward for blocking 2 in a row diagonally, punish for letting opponent block 2 in a row diagonally
         if (smol_check_winner(board, 0, 0) == smol_check_winner(board, 1, 1) == 2) and (smol_check_winner(board, 2, 2) == 1):
             score += bigVal
@@ -119,6 +130,11 @@ def evaluate(board):
         if (smol_check_winner(board, 0, 2) == smol_check_winner(board, 1, 1) == 2) and (smol_check_winner(board, 2, 0) == 1):
             score += bigVal
         elif (smol_check_winner(board, 0, 2) == smol_check_winner(board, 1, 1) == 1) and (smol_check_winner(board, 2, 0) == 2):
+            score -= bigVal
+        # Reward for getting two with a space between, punish for letting opponent get two with a space between
+        if (smol_check_winner(board, 0, 0) == smol_check_winner(board, 2, 2) == 1) and (smol_check_winner(board, 1, 1) == 0):
+            score += bigVal
+        elif (smol_check_winner(board, 0, 0) == smol_check_winner(board, 2, 2) == 2) and (smol_check_winner(board, 1, 1) == 0):
             score -= bigVal
 
         # Small board score
@@ -142,23 +158,38 @@ def evaluate(board):
                 # Reward for blocking a 2 in a row, punish for letting opponent block a 2 in a row
                 for row in range(3):
                     if (board[bigRow][bigCol][row][0] == board[bigRow][bigCol][row][1] == 2) and (board[bigRow][bigCol][row][2] == 1):
-                        score += bigVal
+                        score += modifier * bigVal
                     elif (board[bigRow][bigCol][row][0] == board[bigRow][bigCol][row][1] == 1) and (board[bigRow][bigCol][row][2] == 2):
-                        score -= bigVal
+                        score -= modifier * bigVal
+                    # Reward for getting two with a space between, punish for letting opponent get two with a space between
+                    if (board[bigRow][bigCol][row][0] == board[bigRow][bigCol][row][2] == 1) and (board[bigRow][bigCol][row][1] == 0):
+                        score += modifier * bigVal
+                    elif (board[bigRow][bigCol][row][0] == board[bigRow][bigCol][row][2] == 2) and (board[bigRow][bigCol][row][1] == 0):
+                        score -= modifier * bigVal
                 for col in range(3):
                     if (board[bigRow][bigCol][0][col] == board[bigRow][bigCol][1][col] == 2) and (board[bigRow][bigCol][2][col] == 1):
-                        score += bigVal
+                        score += modifier * bigVal
                     elif (board[bigRow][bigCol][0][col] == board[bigRow][bigCol][1][col] == 1) and (board[bigRow][bigCol][2][col] == 2):
-                        score -= bigVal
+                        score -= modifier * bigVal
+                    # Reward for getting two with a space between, punish for letting opponent get two with a space between
+                    if (board[bigRow][bigCol][0][col] == board[bigRow][bigCol][2][col] == 1) and (board[bigRow][bigCol][1][col] == 0):
+                        score += modifier * bigVal
+                    elif (board[bigRow][bigCol][0][col] == board[bigRow][bigCol][2][col] == 2) and (board[bigRow][bigCol][1][col] == 0):
+                        score -= modifier * bigVal
                 # Reward for blocking 2 in a row diagonally, punish for letting opponent block 2 in a row diagonally
                 if (board[bigRow][bigCol][0][0] == board[bigRow][bigCol][1][1] == 2) and (board[bigRow][bigCol][2][2] == 1):
-                    score += bigVal
+                    score += modifier * bigVal
                 elif (board[bigRow][bigCol][0][0] == board[bigRow][bigCol][1][1] == 1) and (board[bigRow][bigCol][2][2] == 2):
-                    score -= bigVal
+                    score -= modifier * bigVal
                 if (board[bigRow][bigCol][0][2] == board[bigRow][bigCol][1][1] == 2) and (board[bigRow][bigCol][2][0] == 1):
-                    score += bigVal
+                    score += modifier * bigVal
                 elif (board[bigRow][bigCol][0][2] == board[bigRow][bigCol][1][1] == 1) and (board[bigRow][bigCol][2][0] == 2):
-                    score -= bigVal
+                    score -= modifier * bigVal
+                # Reward for getting two with a space between, punish for letting opponent get two with a space between
+                if (board[bigRow][bigCol][0][0] == board[bigRow][bigCol][2][2] == 1) and (board[bigRow][bigCol][1][1] == 0):
+                    score += modifier * bigVal
+                elif (board[bigRow][bigCol][0][0] == board[bigRow][bigCol][2][2] == 2) and (board[bigRow][bigCol][1][1] == 0):
+                    score -= modifier * bigVal
         return score
     
 # You can read more about this alg online (see minimax wiki and TTT AI for a youtube video)
@@ -179,9 +210,10 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
     forcedCol: if the player is forced to play in a certain col
     '''
 
-    if depth == 0 or check_winner(board): # reachs max depth or winning board
+    if depth == 0 or (check_winner(board) != False): # reachs max depth or winning board
         return [evaluate(board), depthCount] # returns how deep into the tree it had to go and node value
     
+    possible_moves = []
     # O is the maximizing player
     if player == 1:
         depthCount += 1
@@ -192,24 +224,32 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
                     for row in range(3):
                         for col in range(3):
                             if board[bigRow][bigCol][row][col] == 0 and smol_check_winner(board, bigRow, bigCol) == None:
-                                board[bigRow][bigCol][row][col] = player
-                                eval = minimax(board, depth - 1, alpha, beta, 2, depthCount, row, col)[0] #all we care about is eval
-                                board[bigRow][bigCol][row][col] = 0
-                                maxEval = max(maxEval, eval)
-                                alpha = max(alpha, eval)
-                                if beta <= alpha: # no need to continue down the tree
-                                    break
+                                possible_moves.append([bigRow, bigCol, row, col])
+            for child in possible_moves:
+                bigRow, bigCol, row, col = child
+                board[bigRow][bigCol][row][col] = player
+                eval = minimax(board, depth - 1, alpha, beta, 2, depthCount, row, col)[0] #all we care about is eval
+                board[bigRow][bigCol][row][col] = 0
+                maxEval = max(maxEval, eval)
+                if alpha > beta: # no need to continue down the tree
+                    # print("pruned")
+                    break
+                alpha = max(alpha, eval)
         else:
             for row in range(3):
                 for col in range(3):
                     if board[forcedRow][forcedCol][row][col] == 0:
-                        board[forcedRow][forcedCol][row][col] = player
-                        eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
-                        board[forcedRow][forcedCol][row][col] = 0
-                        maxEval = max(maxEval, eval)
-                        alpha = max(alpha, eval)
-                        if beta <= alpha: # no need to continue down the tree
-                            break
+                        possible_moves.append([forcedRow, forcedCol, row, col])
+            for child in possible_moves:
+                bigRow, bigCol, row, col = child
+                board[forcedRow][forcedCol][row][col] = player
+                eval = minimax(board, depth - 1, alpha, beta, 2, depthCount, row, col)[0] #all we care about is eval
+                board[forcedRow][forcedCol][row][col] = 0
+                maxEval = max(maxEval, eval)
+                if alpha > beta: # no need to continue down the tree
+                    # print("pruned")
+                    break
+                alpha = max(alpha, eval)
         return [maxEval, depthCount]
     
     # see above section for explanation
@@ -222,24 +262,34 @@ def minimax(board, depth, alpha, beta, player, depthCount, forcedRow, forcedCol)
                     for row in range(3):
                         for col in range(3):
                             if board[bigRow][bigCol][row][col] == 0 and smol_check_winner(board, bigRow, bigCol) == None:
-                                board[bigRow][bigCol][row][col] = player
-                                eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
-                                board[bigRow][bigCol][row][col] = 0
-                                maxEval = min(maxEval, eval)
-                                beta = min(alpha, eval)
-                                if beta <= alpha: # no need to continue down the tree
-                                    break
+                                possible_moves.append([bigRow, bigCol, row, col])
+            for child in possible_moves:
+                bigRow, bigCol, row, col = child
+                board[bigRow][bigCol][row][col] = player
+                eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
+                board[bigRow][bigCol][row][col] = 0
+                maxEval = min(maxEval, eval)
+                beta = min(alpha, eval)
+                if alpha > beta: # no need to continue down the tree
+                    # print("pruned")
+                    break
+                alpha = max(alpha, eval)
         else:
             for row in range(3):
                 for col in range(3):
                      if board[forcedRow][forcedCol][row][col] == 0:
-                        board[forcedRow][forcedCol][row][col] = player
-                        eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
-                        board[forcedRow][forcedCol][row][col] = 0
-                        minEval = min(minEval, eval)
-                        beta = min(alpha, eval)
-                        if beta <= alpha: # no need to continue down the tree
-                            break
+                        possible_moves.append([forcedRow, forcedCol, row, col])
+            for child in possible_moves:
+                bigRow, bigCol, row, col = child
+                board[forcedRow][forcedCol][row][col] = player
+                eval = minimax(board, depth - 1, alpha, beta, 1, depthCount, row, col)[0] #all we care about is eval
+                board[forcedRow][forcedCol][row][col] = 0
+                minEval = min(minEval, eval)
+                beta = min(alpha, eval)
+                if alpha > beta: # no need to continue down the tree
+                    # print("pruned")
+                    break
+                alpha = max(alpha, eval)
         return [minEval, depthCount]
 
 # returns the best move 
