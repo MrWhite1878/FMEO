@@ -58,8 +58,8 @@ def check_winner(board):
 
 # Works like the board eval in chess
 evals = {
-    2: -500,
-    1: 500,
+    2: -900,
+    1: 900,
     "Tie": 0,
 }
 
@@ -68,22 +68,94 @@ def evaluate(board):
     # if someone won just report that score
     if check_winner(board):
         return evals[check_winner(board)]
+    # otherwise, score the board (it gets bad)
     else:
         score = 0
+        bigVal = 10
+        smallVal = 2
+
+        # Big board score
+        for bigRow in range(2):
+            for bigCol in range(2):
+                # Reward for having getting 2 in a row, punish for letting opponent get 2 in a row
+                if (smol_check_winner(board, bigRow, bigCol) == smol_check_winner(board, bigRow+1, bigCol) == 1):
+                    score += bigVal
+                elif (smol_check_winner(board, bigRow, bigCol) == smol_check_winner(board, bigRow+1, bigCol) == 2):
+                    score -= bigVal
+                if (smol_check_winner(board, bigRow, bigCol) == smol_check_winner(board, bigRow, bigCol+1) == 1):
+                    score += bigVal
+                elif (smol_check_winner(board, bigRow, bigCol) == smol_check_winner(board, bigRow, bigCol+1) == 2):
+                    score -= bigVal
+                if (smol_check_winner(board, bigRow, bigCol) == smol_check_winner(board, bigRow+1, bigCol+1) == 1):
+                    score += bigVal
+                elif (smol_check_winner(board, bigRow, bigCol) == smol_check_winner(board, bigRow+1, bigCol+1) == 2):
+                    score -= bigVal
+        for bigRow in range(3):
+            # Reward for blocking 2 in a row, punish for letting opponent block 2 in a row
+            if (smol_check_winner(board, bigRow, 0) == smol_check_winner(board, bigRow, 1) == 2) and (smol_check_winner(board, bigRow, 2) == 1):
+                score += bigVal
+            elif (smol_check_winner(board, bigRow, 0) == smol_check_winner(board, bigRow, 1) == 1) and (smol_check_winner(board, bigRow, 2) == 2):
+                score -= bigVal
+            for bigCol in range(3):
+                # Reward for getting a big board, punish for letting opponent block a big board
+                if smol_check_winner(board, bigRow, bigCol) == 1:
+                    score += bigVal
+                elif smol_check_winner(board, bigRow, bigCol) == 2:
+                    score -= bigVal
+        for bigCol in range(3):
+            # Reward for blocking 2 in a row, punish for letting opponent block 2 in a row
+            if (smol_check_winner(board, 0, bigCol) == smol_check_winner(board, 1, bigCol) == 2) and (smol_check_winner(board, 2, bigCol) == 1):
+                score += bigVal
+            elif (smol_check_winner(board, 0, bigCol) == smol_check_winner(board, 1, bigCol) == 1) and (smol_check_winner(board, 2, bigCol) == 2):
+                score -= bigVal
+        # Reward for blocking 2 in a row diagonally, punish for letting opponent block 2 in a row diagonally
+        if (smol_check_winner(board, 0, 0) == smol_check_winner(board, 1, 1) == 2) and (smol_check_winner(board, 2, 2) == 1):
+            score += bigVal
+        elif (smol_check_winner(board, 0, 0) == smol_check_winner(board, 1, 1) == 1) and (smol_check_winner(board, 2, 2) == 2):
+            score -= bigVal
+        if (smol_check_winner(board, 0, 2) == smol_check_winner(board, 1, 1) == 2) and (smol_check_winner(board, 2, 0) == 1):
+            score += bigVal
+        elif (smol_check_winner(board, 0, 2) == smol_check_winner(board, 1, 1) == 1) and (smol_check_winner(board, 2, 0) == 2):
+            score -= bigVal
+
+        # Small board score
         for bigRow in range(3):
             for bigCol in range(3):
-                # Reward for winning a small board, punish for losing
-                if smol_check_winner(board, bigRow, bigCol) == 1:
-                    score += 5
-                elif smol_check_winner(board, bigRow, bigCol) == 2:
-                    score -= 5
-                # Reward for having more pieces in a small board, punish for having less
+                for row in range(2):
+                    for col in range(2):
+                        # Reward for having getting 2 in a row, punish for letting opponent get 2 in a row
+                        if (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][row+1][col] == 1):
+                            score += smallVal
+                        elif (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][row+1][col] == 2):
+                            score -= smallVal
+                        if (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][row][col+1] == 1): 
+                            score += smallVal
+                        elif (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][row][col+1] == 2):
+                            score -= smallVal
+                        if (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][row+1][col+1] == 1):
+                            score += smallVal
+                        elif (board[bigRow][bigCol][row][col] == board[bigRow][bigCol][row+1][col+1] == 2):
+                            score -= smallVal
+                # Reward for blocking a 2 in a row, punish for letting opponent block a 2 in a row
                 for row in range(3):
-                    for col in range(3):
-                        if board[bigRow][bigCol][row][col] == 1:
-                            score += 2
-                        elif board[bigRow][bigCol][row][col] == 2:
-                            score -= 2
+                    if (board[bigRow][bigCol][row][0] == board[bigRow][bigCol][row][1] == 2) and (board[bigRow][bigCol][row][2] == 1):
+                        score += bigVal
+                    elif (board[bigRow][bigCol][row][0] == board[bigRow][bigCol][row][1] == 1) and (board[bigRow][bigCol][row][2] == 2):
+                        score -= bigVal
+                for col in range(3):
+                    if (board[bigRow][bigCol][0][col] == board[bigRow][bigCol][1][col] == 2) and (board[bigRow][bigCol][2][col] == 1):
+                        score += bigVal
+                    elif (board[bigRow][bigCol][0][col] == board[bigRow][bigCol][1][col] == 1) and (board[bigRow][bigCol][2][col] == 2):
+                        score -= bigVal
+                # Reward for blocking 2 in a row diagonally, punish for letting opponent block 2 in a row diagonally
+                if (board[bigRow][bigCol][0][0] == board[bigRow][bigCol][1][1] == 2) and (board[bigRow][bigCol][2][2] == 1):
+                    score += bigVal
+                elif (board[bigRow][bigCol][0][0] == board[bigRow][bigCol][1][1] == 1) and (board[bigRow][bigCol][2][2] == 2):
+                    score -= bigVal
+                if (board[bigRow][bigCol][0][2] == board[bigRow][bigCol][1][1] == 2) and (board[bigRow][bigCol][2][0] == 1):
+                    score += bigVal
+                elif (board[bigRow][bigCol][0][2] == board[bigRow][bigCol][1][1] == 1) and (board[bigRow][bigCol][2][0] == 2):
+                    score -= bigVal
         return score
     
 # You can read more about this alg online (see minimax wiki and TTT AI for a youtube video)

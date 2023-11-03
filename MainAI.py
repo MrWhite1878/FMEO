@@ -35,7 +35,7 @@ VIVID_TANGERINE = (248,166,125)
 #[BACKGROUND, TEXT/BOARD, HIGHLIGHT, PLAYER1, PLAYER2]
 theme1 = [WHITE, DAVY_GREY, LIGHT_BEIGE, TURQUOISE, BEAN_RED]
 theme2 = [BLACK, WHITE, LIGHT_PURPLE, LIGHT_BLUE, LIGHT_RED]
-theme3 = [TINTED_WHITE, DAVY_GREY, VIVID_TANGERINE, CELESTE, VIOLET]
+theme3 = [TINTED_WHITE, DAVY_GREY, VIVID_TANGERINE, CELESTE, VIOLET, (132, 22, 132), (37, 140, 131)]
 theme = theme3
 theme_num = 1
 
@@ -274,6 +274,7 @@ def start_game():
                 game_over = True
             elif event.type == pygame.MOUSEBUTTONDOWN: # click
                 if player == 1:
+                    print(AI_X.evaluate(board))
                     turnCount += 1
                     bigRow = int(event.pos[1] // THIRD)
                     bigCol = int(event.pos[0] // THIRD)
@@ -301,7 +302,11 @@ def start_game():
             # print("got here")
             elif player == 2 and (pygame.display.get_surface() is not None):
                 # print(forceRow, forceCol)
-                depth = int(sqrt(turnCount) / 1.25) + 1
+                print(AI_X.evaluate(board))
+                if turnCount < 2:
+                    depth = 1
+                else:
+                    depth = int(sqrt(turnCount) / 1.4) + 1
                 bigRow, bigCol, smolRow, smolCol = AI_X.get_move(board, depth, player, forceRow, forceCol)
                 turnCount += 1
                 # print(bigRow, bigCol, smolRow, smolCol)
@@ -331,7 +336,7 @@ def start_game():
                     display_smol_winner(bigRow, bigCol, AI_X.smol_check_winner(board, bigRow, bigCol))
                 for i in playable_smol_boards(forceRow, forceCol):
                     if [bigRow, bigCol] == i:
-                        pygame.draw.rect(screen, theme[2], (bigCol*THIRD + SPACING - 5, bigRow*THIRD + SPACING - 5, THIRD - 2*SPACING + 10, THIRD - 2*SPACING + 10))
+                        pygame.draw.rect(screen, theme[player+4], (bigCol*THIRD + SPACING - 5, bigRow*THIRD + SPACING - 5, THIRD - 2*SPACING + 10, THIRD - 2*SPACING + 10))
                 for smolRow in range(3):
                     for smolCol in range(3):
                         if board[bigRow][bigCol][smolRow][smolCol] == 1:
