@@ -4,11 +4,6 @@
 #
 # Based on TTT AI, please see that file for more info
 
-# Check for a winner in a small board
-from treelib import Node, Tree
-
-tree = Tree()
-
 
 def print_board(board):
     for i in range(3):
@@ -17,7 +12,7 @@ def print_board(board):
         print()
 
 
-
+# Check for a winner in a small board
 def smol_check_winner(board, bigRow, bigCol):
     # Check rows
     for row in range(3):
@@ -552,14 +547,7 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
                 eval = minimax(board, depth - 1, alpha, beta, 2, row, col)
                 board[bigRow][bigCol][row][col] = 0
                 maxEval = max(maxEval, eval)
-                '''print(
-                    "\tEval:",
-                    eval,
-                    ", Depth:",
-                    depth,
-                    ", Move:",
-                    [bigRow, bigCol, row, col],
-                )'''
+                print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
                 if alpha > beta:  # no need to continue down the tree
                     # print("pruned")
                     break
@@ -575,14 +563,7 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
                 eval = minimax(board, depth - 1, alpha, beta, 2, row, col)
                 board[forcedRow][forcedCol][row][col] = 0
                 maxEval = max(maxEval, eval)
-                '''print(
-                    "\tEval:",
-                    eval,
-                    ", Depth:",
-                    depth,
-                    ", Move:",
-                    [bigRow, bigCol, row, col],
-                )'''
+                print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
                 if alpha > beta:  # no need to continue down the tree
                     # print("pruned")
                     break
@@ -609,14 +590,7 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
                 board[bigRow][bigCol][row][col] = 0
                 maxEval = min(maxEval, eval)
                 beta = min(alpha, eval)
-                '''print(
-                    "\tEval:",
-                    eval,
-                    ", Depth:",
-                    depth,
-                    ", Move:",
-                    [bigRow, bigCol, row, col],
-                )'''
+                print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
                 if alpha > beta:  # no need to continue down the tree
                     # print("pruned")
                     break
@@ -633,14 +607,7 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
                 board[forcedRow][forcedCol][row][col] = 0
                 minEval = min(minEval, eval)
                 beta = min(alpha, eval)
-                '''print(
-                    "\tEval:",
-                    eval,
-                    ", Depth:",
-                    depth,
-                    ", Move:",
-                    [bigRow, bigCol, row, col],
-                )'''
+                print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
                 if alpha > beta:  # no need to continue down the tree
                     # print("pruned")
                     break
@@ -649,14 +616,9 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
 
 
 # returns the best move
-cnt = -1
 def get_move(board, depth, player, forcedRow, forcedCol):
-    global cnt
     bestEval = 1000
     bestMove = [-1, -1, -1, -1]
-    cnt += 1
-    rootID = "root" + str(cnt)
-    tree.create_node(rootID, rootID)
     if forcedRow == -1 and forcedCol == -1:
         for bigRow in range(3):
             for bigCol in range(3):
@@ -701,6 +663,4 @@ def get_move(board, depth, player, forcedRow, forcedCol):
                         bestEval = moveEval
                         bestMove = [bigRow, bigCol, row, col]
     print("Move: ", bestMove)
-    tree.create_node(str(bestMove), str(bestMove), parent=rootID)
-    tree.show()
     return bestMove
