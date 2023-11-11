@@ -42,7 +42,7 @@ theme3 = [
     CELESTE,
     VIOLET,
     (132, 22, 132),
-    (37, 140, 131),
+    (37, 140, 131),5
 ]
 theme = theme3
 theme_num = 1
@@ -77,7 +77,7 @@ board = [
     ],
     [
         [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
-        [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        [[0, 0, 0], [0, 2, 0], [0, 0, 0]],
         [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
     ],
     [
@@ -320,7 +320,7 @@ def display_winner(winner):
 
 
 # declared variables outside of function to prevent them from resetting every time the function is called
-player = 2  # 1 is O, 2 is X
+player = 1  # 1 is O, 2 is X
 forceRow, forceCol = (
     -1,
     -1,
@@ -350,7 +350,7 @@ def start_game():
                         bigCol == forceCol and bigRow == forceRow
                     ):  # essentially, if the player in the highlighted board
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            AI_X.print_board(board)
+                            #AI_X.print_board(board)
                             print(
                                 "O's turn, ",
                                 "Turn count:",
@@ -371,7 +371,7 @@ def start_game():
                                 forceCol = -1
                     elif forceRow == -1 and forceCol == -1:
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            AI_X.print_board(board)
+                            #AI_X.print_board(board)
                             print(
                                 "O's turn, ",
                                 "Turn count:",
@@ -391,7 +391,7 @@ def start_game():
                                 forceCol = -1
             # print("got here")
             elif player == 2 and (pygame.display.get_surface() is not None):
-                AI_X.print_board
+                #AI_X.print_board
                 print(
                     "X's turn, ",
                     "Turn count:",
@@ -399,12 +399,10 @@ def start_game():
                     ", Board Evaluation:",
                     AI_X.evaluate(board),
                 )
-                if turnCount < 3:
-                    depth = 1
-                elif forceRow == -1 and forceCol == -1:
-                    depth = 1
+                if forceRow == -1 and forceCol == -1:
+                    depth = 2
                 else:
-                    depth = 1  
+                    depth = 3
                 bigRow, bigCol, smolRow, smolCol = AI_X.get_move(
                     board, depth, player, forceRow, forceCol
                 )

@@ -4,6 +4,8 @@
 #
 # Based on TTT AI, please see that file for more info
 
+# For the Reader ;)
+fyi = {0: "Empty", 1: "O", 2: "X"}
 
 def print_board(board):
     for i in range(3):
@@ -107,403 +109,67 @@ def check_winner(board):
 
 
 # Works like the board eval in chess
+maxEvaluationalValue = 999999
 evals = {
-    2: -500,
-    1: 500,
+    2: maxEvaluationalValue,
+    1: -maxEvaluationalValue,
     "Tie": 0,
 }
 
 
 # Returns the score of the board
 def evaluate(board):
-    # if someone won just report that score
     if check_winner(board):
-        return evals[check_winner(board)], []
-
-    # otherwise, score the board (it gets bad)
-    else:
-        score = 0
-        bigVal = 50
-        smallVal = 2
-        modifier = 0.67
-        pavlovs = []
-        won_biggies = []
-
-        # Big board score
-        for bigRow in range(2):
-            for bigCol in range(3):
-                # Reward for having getting 2 in a row, punish for letting opponent get 2 in a row
-                if (
-                    smol_check_winner(board, bigRow, bigCol)
-                    == smol_check_winner(board, bigRow + 1, bigCol)
-                    == 1
-                ):
-                    pavlovs.append("Big Vertical 2 in a row reward")
-                    score += bigVal
-                elif (
-                    smol_check_winner(board, bigRow, bigCol)
-                    == smol_check_winner(board, bigRow + 1, bigCol)
-                    == 2
-                ):
-                    pavlovs.append("Big Vertical 2 in a row punishment")
-                    score -= bigVal
-        for bigRow in range(3):
-            for bigCol in range(2):
-                if (
-                    smol_check_winner(board, bigRow, bigCol)
-                    == smol_check_winner(board, bigRow, bigCol + 1)
-                    == 1
-                ):
-                    pavlovs.append("Big Horizontal 2 in a row reward")
-                    score += bigVal
-                elif (
-                    smol_check_winner(board, bigRow, bigCol)
-                    == smol_check_winner(board, bigRow, bigCol + 1)
-                    == 2
-                ):
-                    pavlovs.append("Big Horizontal 2 in a row punishment")
-                    score -= bigVal
-            # Reward for blocking 2 in a row, punish for letting opponent block 2 in a row
-            if (
-                smol_check_winner(board, bigRow, 0)
-                == smol_check_winner(board, bigRow, 1)
-                == 2
-            ) and (smol_check_winner(board, bigRow, 2) == 1):
-                pavlovs.append("Big Horizontal 2 in a row block reward")
-                score += bigVal
-            elif (
-                smol_check_winner(board, bigRow, 0)
-                == smol_check_winner(board, bigRow, 1)
-                == 1
-            ) and (smol_check_winner(board, bigRow, 2) == 2):
-                pavlovs.append("Big Horizontal 2 in a row block punishment")
-                score -= bigVal
-            # Reward for getting two with a space between, punish for letting opponent get two with a space between
-            if (
-                smol_check_winner(board, bigRow, 0)
-                == smol_check_winner(board, bigRow, 2)
-                == 1
-            ) and (smol_check_winner(board, bigRow, 1) == 0):
-                pavlovs.append("Big Horizontal spaced 2 in a row reward")
-                score += bigVal
-            elif (
-                smol_check_winner(board, bigRow, 0)
-                == smol_check_winner(board, bigRow, 2)
-                == 2
-            ) and (smol_check_winner(board, bigRow, 1) == 0):
-                pavlovs.append("Big Horizontal spaced 2 in a row punishment")
-                score -= bigVal
-            for bigCol in range(3):
-                # Reward for getting a big board, punish for letting opponent block a big board
-                if smol_check_winner(board, bigRow, bigCol) == 1:
-                    pavlovs.append("Big board reward")
-                    score += bigVal
-                    won_biggies.append([bigRow, bigCol])
-                elif smol_check_winner(board, bigRow, bigCol) == 2:
-                    pavlovs.append("Big board punishment")
-                    score -= bigVal
-                    won_biggies.append([bigRow, bigCol])
+        return evals[check_winner(board)]
+    score = 0
+    # reward/punish for winning/losing board
+    for bigRow in range(3):
         for bigCol in range(3):
-            # Reward for blocking 2 in a row, punish for letting opponent block 2 in a row
-            if (
-                smol_check_winner(board, 0, bigCol)
-                == smol_check_winner(board, 1, bigCol)
-                == 2
-            ) and (smol_check_winner(board, 2, bigCol) == 1):
-                pavlovs.append("Big Vertical 2 in a row block reward")
-                score += bigVal
-            elif (
-                smol_check_winner(board, 0, bigCol)
-                == smol_check_winner(board, 1, bigCol)
-                == 1
-            ) and (smol_check_winner(board, 2, bigCol) == 2):
-                pavlovs.append("Big Vertical 2 in a row block punishment")
-                score -= bigVal
-            # Reward for getting two with a space between, punish for letting opponent get two with a space between
-            if (
-                smol_check_winner(board, 0, bigCol)
-                == smol_check_winner(board, 2, bigCol)
-                == 1
-            ) and (smol_check_winner(board, 1, bigCol) == 0):
-                pavlovs.append("Big Vertical spaced 2 in a row reward")
-                score += bigVal
-            elif (
-                smol_check_winner(board, 0, bigCol)
-                == smol_check_winner(board, 2, bigCol)
-                == 2
-            ) and (smol_check_winner(board, 1, bigCol) == 0):
-                pavlovs.append("Big Vertical spaced 2 in a row punishment")
-                score -= bigVal
-        truth_1, truth_2 = None, None
-        if smol_check_winner(board, 0, 0) == smol_check_winner(board, 1, 1):
-            truth_1 = smol_check_winner(board, 0, 0)
-        elif smol_check_winner(board, 0, 2) == smol_check_winner(board, 1, 1):
-            truth_2 = smol_check_winner(board, 0, 2)
-        # Reward for getting 2 in a row diagonally, punish for letting opponent get 2 in a row diagonally
-        if truth_1 == 1:
-            pavlovs.append("Big Diagonal 2 in a row reward")
-            score += bigVal
-        elif truth_1 == 2:
-            pavlovs.append("Big Diagonal 2 in a row punishment")
-            score -= bigVal
-        if truth_2 == 1:
-            pavlovs.append("Big Diagonal 2 in a row reward")
-            score += bigVal
-        elif truth_2 == 2:
-            pavlovs.append("Big Diagonal 2 in a row punishment")
-            score -= bigVal
-        if smol_check_winner(board, 2, 0) == smol_check_winner(board, 1, 1) == 1:
-            pavlovs.append("Big Diagonal 2 in a row reward")
-            score += bigVal
-        elif smol_check_winner(board, 2, 0) == smol_check_winner(board, 1, 1) == 2:
-            pavlovs.append("Big Diagonal 2 in a row punishment")
-            score -= bigVal
-        if smol_check_winner(board, 2, 2) == smol_check_winner(board, 1, 1) == 1:
-            pavlovs.append("Big Diagonal 2 in a row reward")
-            score += bigVal
-        elif smol_check_winner(board, 2, 2) == smol_check_winner(board, 1, 1) == 2:
-            pavlovs.append("Big Diagonal 2 in a row punishment")
-            score -= bigVal
-        # Reward for blocking 2 in a row diagonally, punish for letting opponent block 2 in a row diagonally
-        if (truth_1 == 2) and (smol_check_winner(board, 2, 2) == 1):
-            pavlovs.append("Big Diagonal 2 in a row block reward")
-            score += bigVal
-        elif (truth_1 == 1) and (smol_check_winner(board, 2, 2) == 2):
-            pavlovs.append("Big Diagonal 2 in a row block punishment")
-            score -= bigVal
-        if (truth_2 == 2) and (smol_check_winner(board, 2, 0) == 1):
-            pavlovs.append("Big Diagonal 2 in a row block reward")
-            score += bigVal
-        elif (truth_2 == 1) and (smol_check_winner(board, 2, 0) == 2):
-            pavlovs.append("Big Diagonal 2 in a row block punishment")
-            score -= bigVal
-        # Reward for getting two with a space between, punish for letting opponent get two with a space between
-        if (smol_check_winner(board, 0, 0) == smol_check_winner(board, 2, 2) == 1) and (
-            smol_check_winner(board, 1, 1) == 0
-        ):
-            pavlovs.append("Big Diagonal spaced 2 in a row reward")
-            score += bigVal
-        elif (
-            smol_check_winner(board, 0, 0) == smol_check_winner(board, 2, 2) == 2
-        ) and (smol_check_winner(board, 1, 1) == 0):
-            pavlovs.append("Big Diagonal spaced 2 in a row punishment")
-            score -= bigVal
-        if (smol_check_winner(board, 0, 2) == smol_check_winner(board, 2, 0) == 1) and (
-            smol_check_winner(board, 1, 1) == 0
-        ):
-            pavlovs.append("Big Diagonal spaced 2 in a row reward")
-            score += bigVal
-        elif (
-            smol_check_winner(board, 0, 2) == smol_check_winner(board, 2, 0) == 2
-        ) and (smol_check_winner(board, 1, 1) == 0):
-            pavlovs.append("Big Diagonal spaced 2 in a row punishment")
-            score -= bigVal
-        # Reward for blocking two with a space between, punish for letting opponent block two with a space between
-        if (smol_check_winner(board, 0, 0) == smol_check_winner(board, 2, 2) == 2) and (
-            smol_check_winner(board, 1, 1) == 1
-        ):
-            pavlovs.append("Big Diagonal spaced 2 in a row block reward")
-            score += bigVal
-        elif (
-            smol_check_winner(board, 0, 0) == smol_check_winner(board, 2, 2) == 1
-        ) and (smol_check_winner(board, 1, 1) == 2):
-            pavlovs.append("Big Diagonal spaced 2 in a row block punishment")
-            score -= bigVal
-        if (smol_check_winner(board, 0, 2) == smol_check_winner(board, 2, 0) == 2) and (
-            smol_check_winner(board, 1, 1) == 1
-        ):
-            pavlovs.append("Big Diagonal spaced 2 in a row block reward")
-            score += bigVal
-        elif (
-            smol_check_winner(board, 0, 2) == smol_check_winner(board, 2, 0) == 1
-        ) and (smol_check_winner(board, 1, 1) == 2):
-            pavlovs.append("Big Diagonal spaced 2 in a row block punishment")
-            score -= bigVal
+            if smol_check_winner(board, bigRow, bigCol) == 1:
+                score += 100
+                # if two in a row 
+                for i in range(-1, 2):
+                    for j in range(-1, 2):
+                        try:
+                            if (i!=0 and j!=0) and smol_check_winner(board, bigRow + i, bigCol + j) == 1:
+                                score += 100
+                        except IndexError:
+                            pass
+            elif smol_check_winner(board, bigRow, bigCol) == 2:
+                score -= 100
+                # if two in a row 
+                for i in range(-1, 2):
+                    for j in range(-1, 2):
+                        try:
+                            if (i!=0 and j!=0) and (smol_check_winner(board, bigRow + i, bigCol + j) == 2) and (smol_check_winner(board, bigRow - i, bigCol - j) == 1):
+                                score += 150
+                        except IndexError:
+                            pass
+    # reward for two in a row on small board
+    for bigRow in range(3):
+        for bigCol in range(3):
+            if smol_check_winner(board, bigRow, bigCol) is None:
+                for i in range(3):
+                    for j in range(3):
+                        if board[bigRow][bigCol][i][j] == 1:
+                            for a in range(-1, 2):
+                                for b in range(-1, 2):
+                                    try:
+                                        if (a!=0 and b!=0) and board[bigRow][bigCol][i+a][j+b] == 1:
+                                            score += 5
+                                    except IndexError:
+                                        pass
+                        elif board[bigRow][bigCol][i][j] == 2:
+                            for a in range(-1, 2):
+                                for b in range(-1, 2):
+                                    try:
+                                        if (a!=0 and b!=0) and (board[bigRow][bigCol][i+a][j+b] == 2) and (board[bigRow][bigCol][i-a][j-b] == 1):
+                                            score += 20
+                                    except IndexError:
+                                        pass
+    return -score
 
-        # Small board score
-        for bigRow in range(3):
-            for bigCol in range(3):
-                if [bigRow, bigCol] in won_biggies:
-                    continue
-                for row in range(2):
-                    for col in range(3):
-                        # Reward for having getting 2 in a row, punish for letting opponent get 2 in a row
-                        if (
-                            board[bigRow][bigCol][row][col]
-                            == board[bigRow][bigCol][row + 1][col]
-                            == 1
-                        ):
-                            pavlovs.append("Small Vertical 2 in a row reward")
-                            score += smallVal
-                        elif (
-                            board[bigRow][bigCol][row][col]
-                            == board[bigRow][bigCol][row + 1][col]
-                            == 2
-                        ):
-                            pavlovs.append("Small Vertical 2 in a row punishment")
-                            score -= smallVal
-                # Reward for blocking a 2 in a row, punish for letting opponent block a 2 in a row
-                for row in range(3):
-                    for col in range(2):
-                        if (
-                            board[bigRow][bigCol][row][col]
-                            == board[bigRow][bigCol][row][col + 1]
-                            == 1
-                        ):
-                            pavlovs.append("Small Horizontal 2 in a row reward")
-                            score += smallVal
-                        elif (
-                            board[bigRow][bigCol][row][col]
-                            == board[bigRow][bigCol][row][col + 1]
-                            == 2
-                        ):
-                            pavlovs.append("Small Horizontal 2 in a row punishment")
-                            score -= smallVal
-                    if (
-                        board[bigRow][bigCol][row][0]
-                        == board[bigRow][bigCol][row][1]
-                        == 2
-                    ) and (board[bigRow][bigCol][row][2] == 1):
-                        pavlovs.append("Small Horizontal 2 in a row block reward")
-                        score += modifier * bigVal
-                    elif (
-                        board[bigRow][bigCol][row][0]
-                        == board[bigRow][bigCol][row][1]
-                        == 1
-                    ) and (board[bigRow][bigCol][row][2] == 2):
-                        pavlovs.append("Small Horizontal 2 in a row block punishment")
-                        score -= modifier * bigVal
-                    # Reward for getting two with a space between, punish for letting opponent get two with a space between
-                    if (
-                        board[bigRow][bigCol][row][0]
-                        == board[bigRow][bigCol][row][2]
-                        == 1
-                    ) and (board[bigRow][bigCol][row][1] == 0):
-                        pavlovs.append("Small Horizontal spaced 2 in a row reward")
-                        score += smallVal
-                    elif (
-                        board[bigRow][bigCol][row][0]
-                        == board[bigRow][bigCol][row][2]
-                        == 2
-                    ) and (board[bigRow][bigCol][row][1] == 0):
-                        pavlovs.append("Small Horizontal spaced 2 in a row punishment")
-                        score -= smallVal
-                for col in range(3):
-                    # Reward for blocking 2 in a row, punish for letting opponent block 2 in a row
-                    if (
-                        board[bigRow][bigCol][0][col]
-                        == board[bigRow][bigCol][1][col]
-                        == 2
-                    ) and (board[bigRow][bigCol][2][col] == 1):
-                        pavlovs.append("Small Vertical 2 in a row block reward")
-                        score += modifier * bigVal
-                    elif (
-                        board[bigRow][bigCol][0][col]
-                        == board[bigRow][bigCol][1][col]
-                        == 1
-                    ) and (board[bigRow][bigCol][2][col] == 2):
-                        pavlovs.append("Small Vertical 2 in a row block punishment")
-                        score -= modifier * bigVal
-                    # Reward for getting two with a space between, punish for letting opponent get two with a space between
-                    if (
-                        board[bigRow][bigCol][0][col]
-                        == board[bigRow][bigCol][2][col]
-                        == 1
-                    ) and (board[bigRow][bigCol][1][col] == 0):
-                        pavlovs.append("Small Vertical spaced 2 in a row reward")
-                        score += smallVal
-                    elif (
-                        board[bigRow][bigCol][0][col]
-                        == board[bigRow][bigCol][2][col]
-                        == 2
-                    ) and (board[bigRow][bigCol][1][col] == 0):
-                        pavlovs.append("Small Vertical spaced 2 in a row punishment")
-                        score -= smallVal
-                truth_3, truth_4 = None, None
-                if board[bigRow][bigCol][0][0] == board[bigRow][bigCol][1][1]:
-                    truth_3 = board[bigRow][bigCol][0][0]
-                elif board[bigRow][bigCol][0][2] == board[bigRow][bigCol][1][1]:
-                    truth_4 = board[bigRow][bigCol][0][2]
-                # Reward for getting 2 in a row diagonally, punish for letting opponent get 2 in a row diagonally
-                if truth_3 == 1:
-                    pavlovs.append("Small Diagonal 2 in a row reward")
-                    score += smallVal
-                elif truth_3 == 2:
-                    pavlovs.append("Small Diagonal 2 in a row punishment")
-                    score -= smallVal
-                if truth_4 == 1:
-                    pavlovs.append("Small Diagonal 2 in a row reward")
-                    score += smallVal
-                elif truth_4 == 2:
-                    pavlovs.append("Small Diagonal 2 in a row punishment")
-                    score -= smallVal
-                if board[bigRow][bigCol][2][0] == board[bigRow][bigCol][1][1] == 1:
-                    pavlovs.append("Small Diagonal 2 in a row reward")
-                    score += smallVal
-                elif board[bigRow][bigCol][2][0] == board[bigRow][bigCol][1][1] == 2:
-                    pavlovs.append("Small Diagonal 2 in a row punishment")
-                    score -= smallVal
-                if board[bigRow][bigCol][2][2] == board[bigRow][bigCol][1][1] == 1:
-                    pavlovs.append("Small Diagonal 2 in a row reward")
-                    score += smallVal
-                elif board[bigRow][bigCol][2][2] == board[bigRow][bigCol][1][1] == 2:
-                    pavlovs.append("Small Diagonal 2 in a row punishment")
-                    score -= smallVal
-                # Reward for blocking 2 in a row diagonally, punish for letting opponent block 2 in a row diagonally
-                if (truth_3 == 2) and (board[bigRow][bigCol][2][2] == 1):
-                    pavlovs.append("Small Diagonal 2 in a row block reward")
-                    score += modifier * bigVal
-                elif (truth_3 == 1) and (board[bigRow][bigCol][2][2] == 2):
-                    pavlovs.append("Small Diagonal 2 in a row block punishment")
-                    score -= modifier * bigVal
-                if (truth_4 == 2) and (board[bigRow][bigCol][2][0] == 1):
-                    pavlovs.append("Small Diagonal 2 in a row block reward")
-                    score += modifier * bigVal
-                elif (truth_4 == 1) and (board[bigRow][bigCol][2][0] == 2):
-                    pavlovs.append("Small Diagonal 2 in a row block punishment")
-                    score -= modifier * bigVal
-                # Reward for getting two with a space between, punish for letting opponent get two with a space between
-                if (
-                    board[bigRow][bigCol][0][0] == board[bigRow][bigCol][2][2] == 1
-                ) and (board[bigRow][bigCol][1][1] == 0):
-                    pavlovs.append("Small Diagonal spaced 2 in a row reward")
-                    score += smallVal
-                elif (
-                    board[bigRow][bigCol][0][0] == board[bigRow][bigCol][2][2] == 2
-                ) and (board[bigRow][bigCol][1][1] == 0):
-                    pavlovs.append("Small Diagonal spaced 2 in a row punishment")
-                    score -= smallVal
-                if (
-                    board[bigRow][bigCol][0][2] == board[bigRow][bigCol][2][0] == 1
-                ) and (board[bigRow][bigCol][1][1] == 0):
-                    pavlovs.append("Small Diagonal spaced 2 in a row reward")
-                    score += smallVal
-                elif (
-                    board[bigRow][bigCol][0][2] == board[bigRow][bigCol][2][0] == 2
-                ) and (board[bigRow][bigCol][1][1] == 0):
-                    score -= smallVal
-                # Reward for blocking two with a space between, punish for letting opponent block two with a space between
-                if (
-                    board[bigRow][bigCol][0][0] == board[bigRow][bigCol][2][2] == 2
-                ) and (board[bigRow][bigCol][1][1] == 1):
-                    pavlovs.append("Small Diagonal spaced 2 in a row block reward")
-                    score += modifier * bigVal
-                elif (
-                    board[bigRow][bigCol][0][0] == board[bigRow][bigCol][2][2] == 1
-                ) and (board[bigRow][bigCol][1][1] == 2):
-                    pavlovs.append("Small Diagonal spaced 2 in a row block punishment")
-                    score -= modifier * bigVal
-                if (
-                    board[bigRow][bigCol][0][2] == board[bigRow][bigCol][2][0] == 2
-                ) and (board[bigRow][bigCol][1][1] == 1):
-                    pavlovs.append("Small Diagonal spaced 2 in a row block reward")
-                    score += modifier * bigVal
-                elif (
-                    board[bigRow][bigCol][0][2] == board[bigRow][bigCol][2][0] == 1
-                ) and (board[bigRow][bigCol][1][1] == 2):
-                    pavlovs.append("Small Diagonal spaced 2 in a row block punishment")
-                    score -= modifier * bigVal
-        return score, pavlovs
+    
 
 
 # You can read more about this alg online (see minimax wiki and TTT AI for a youtube video)
@@ -525,99 +191,64 @@ def minimax(board, depth, alpha, beta, player, forcedRow, forcedCol):
 
     if depth == 0 or (check_winner(board) != False):  # reachs max depth or winning board
         # print("\tEval:", evaluate(board)[0], ", Depth:", depth, ", Board:", print_board(board))
-        return evaluate(board)[0]  # returns how deep into the tree it had to go and node value
+        return evaluate(board)  # returns how deep into the tree it had to go and node value
+
+    if (forcedRow != -1) and (smol_check_winner(board, forcedRow, forcedCol) != None):
+        forcedRow, forcedCol = -1, -1
 
     possible_moves = []
-    # O is the maximizing player
-    if player == 1:
-        maxEval = -1000  # anything < -500 should work
-        if forcedRow == -1 and forcedCol == -1:
-            for bigRow in range(3):
-                for bigCol in range(3):
-                    for row in range(3):
-                        for col in range(3):
-                            if (
-                                board[bigRow][bigCol][row][col] == 0
-                                and smol_check_winner(board, bigRow, bigCol) == None
-                            ):
-                                possible_moves.append([bigRow, bigCol, row, col])
-            for child in possible_moves:
-                bigRow, bigCol, row, col = child
-                board[bigRow][bigCol][row][col] = player
-                eval = minimax(board, depth - 1, alpha, beta, 2, row, col)
-                board[bigRow][bigCol][row][col] = 0
-                maxEval = max(maxEval, eval)
-                print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
-                if alpha > beta:  # no need to continue down the tree
-                    # print("pruned")
-                    break
-                alpha = max(alpha, eval)
-        else:
-            for row in range(3):
-                for col in range(3):
-                    if board[forcedRow][forcedCol][row][col] == 0:
-                        possible_moves.append([forcedRow, forcedCol, row, col])
-            for child in possible_moves:
-                bigRow, bigCol, row, col = child
-                board[forcedRow][forcedCol][row][col] = player
-                eval = minimax(board, depth - 1, alpha, beta, 2, row, col)
-                board[forcedRow][forcedCol][row][col] = 0
-                maxEval = max(maxEval, eval)
-                print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
-                if alpha > beta:  # no need to continue down the tree
-                    # print("pruned")
-                    break
-                alpha = max(alpha, eval)
+    if forcedRow == -1 and forcedCol == -1:
+        for bigRow in range(3):
+            for bigCol in range(3):
+                for row in range(3):
+                    for col in range(3):
+                        if (
+                            smol_check_winner(board, bigRow, bigCol) == None
+                            and board[bigRow][bigCol][row][col] == 0
+                        ):
+                            possible_moves.append([bigRow, bigCol, row, col])
+    else:
+        for row in range(3):
+            for col in range(3):
+                if board[forcedRow][forcedCol][row][col] == 0:
+                    possible_moves.append([forcedRow, forcedCol, row, col])
+
+    # X(2) is the maximizing player
+    if player == 2:
+        maxEval = -maxEvaluationalValue  # anything < -500 should work
+        for child in possible_moves:
+            bigRow, bigCol, row, col = child
+            board[bigRow][bigCol][row][col] = player
+            tempEval = minimax(board, depth - 1, alpha, beta, 1, row, col)
+            board[bigRow][bigCol][row][col] = 0
+            maxEval = max(maxEval, tempEval)
+            #print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
+            if maxEval > beta:  # no need to continue down the tree
+                # print("pruned")
+                break
+            alpha = max(alpha, maxEval)
         return maxEval
 
     # see above section for explanation
     else:
-        minEval = 1000
-        if forcedRow == -1 and forcedCol == -1:
-            for bigRow in range(3):
-                for bigCol in range(3):
-                    for row in range(3):
-                        for col in range(3):
-                            if (
-                                board[bigRow][bigCol][row][col] == 0
-                                and smol_check_winner(board, bigRow, bigCol) == None
-                            ):
-                                possible_moves.append([bigRow, bigCol, row, col])
-            for child in possible_moves:
-                bigRow, bigCol, row, col = child
-                board[bigRow][bigCol][row][col] = player
-                eval = minimax(board, depth - 1, alpha, beta, 1, row, col)
-                board[bigRow][bigCol][row][col] = 0
-                maxEval = min(maxEval, eval)
-                beta = min(alpha, eval)
-                print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
-                if alpha > beta:  # no need to continue down the tree
-                    # print("pruned")
-                    break
-                alpha = max(alpha, eval)
-        else:
-            for row in range(3):
-                for col in range(3):
-                    if board[forcedRow][forcedCol][row][col] == 0:
-                        possible_moves.append([forcedRow, forcedCol, row, col])
-            for child in possible_moves:
-                bigRow, bigCol, row, col = child
-                board[forcedRow][forcedCol][row][col] = player
-                eval = minimax(board, depth - 1, alpha, beta, 1, row, col)
-                board[forcedRow][forcedCol][row][col] = 0
-                minEval = min(minEval, eval)
-                beta = min(alpha, eval)
-                print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
-                if alpha > beta:  # no need to continue down the tree
-                    # print("pruned")
-                    break
-                alpha = max(alpha, eval)
+        minEval = maxEvaluationalValue
+        for child in possible_moves:
+            bigRow, bigCol, row, col = child
+            board[bigRow][bigCol][row][col] = player
+            tEval = minimax(board, depth - 1, alpha, beta, 2, row, col)
+            board[bigRow][bigCol][row][col] = 0
+            minEval = min(minEval, tEval)
+            #print(f"\tEval: {eval}  Depth: {depth} Move: {[row, col]}")
+            if minEval < alpha:  # no need to continue down the tree
+                # print("pruned")
+                break
+            beta = min(beta, minEval)
         return minEval
 
 
 # returns the best move
 def get_move(board, depth, player, forcedRow, forcedCol):
-    bestEval = 1000
+    bestEval = -maxEvaluationalValue - 1
     bestMove = [-1, -1, -1, -1]
     if forcedRow == -1 and forcedCol == -1:
         for bigRow in range(3):
@@ -629,7 +260,7 @@ def get_move(board, depth, player, forcedRow, forcedCol):
                             and smol_check_winner(board, bigRow, bigCol) == None
                         ):
                             board[bigRow][bigCol][row][col] = player
-                            moveEval = minimax(board, depth, -1000, 1000, 1, row, col)
+                            moveEval = minimax(board, depth, -maxEvaluationalValue, maxEvaluationalValue, 1, row, col)
                             '''print(
                                 "Eval:",
                                 moveEval,
@@ -639,7 +270,7 @@ def get_move(board, depth, player, forcedRow, forcedCol):
                                 [bigRow, bigCol, row, col],
                             )'''
                             board[bigRow][bigCol][row][col] = 0
-                            if moveEval < bestEval:
+                            if moveEval > bestEval:
                                 bestEval = moveEval
                                 bestMove = [bigRow, bigCol, row, col]
     else:
@@ -649,7 +280,7 @@ def get_move(board, depth, player, forcedRow, forcedCol):
             for col in range(3):
                 if board[bigRow][bigCol][row][col] == 0:
                     board[bigRow][bigCol][row][col] = player
-                    moveEval = minimax(board, depth, -1000, 1000, 1, row, col)
+                    moveEval = minimax(board, depth, -maxEvaluationalValue, maxEvaluationalValue, 1, row, col)
                     '''print(
                         "Eval:",
                         moveEval,
@@ -659,7 +290,7 @@ def get_move(board, depth, player, forcedRow, forcedCol):
                         [bigRow, bigCol, row, col],
                     )'''
                     board[bigRow][bigCol][row][col] = 0
-                    if moveEval < bestEval:
+                    if moveEval > bestEval:
                         bestEval = moveEval
                         bestMove = [bigRow, bigCol, row, col]
     print("Move: ", bestMove)
