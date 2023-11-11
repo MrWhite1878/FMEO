@@ -8,8 +8,8 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "C:\\Users\\BroBo\\OneDrive\\Documents\\Java2023\\SuperTicTacToe\\MainAI.py",
-            "console": "externalTerminal",
+            "program": "C:\\Users\\BroBo\\OneDrive\\Documents\\Java2023\\SuperTicTacToe\\Main.py",
+            "console": "integratedTerminal",
             "justMyCode": true
         }
     ]
