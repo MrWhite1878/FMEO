@@ -8,6 +8,7 @@
 # Pressing Theme will change the theme (there are 3)
 
 import pygame
+import game_logic
 
 # Initialize Pygame
 pygame.init()
@@ -237,7 +238,7 @@ def handle_input():
 def handle_move(bigRow, bigCol, smolRow, smolCol, player):
     if (
         board[bigRow][bigCol][smolRow][smolCol] == 0
-        and smol_check_winner(board, bigRow, bigCol) == None
+        and game_logic.smol_check_winner(board, bigRow, bigCol) == None
     ):
         board[bigRow][bigCol][smolRow][smolCol] = player
         return True
@@ -251,57 +252,13 @@ def playable_smol_boards(forceRow, forceCol):
     if forceRow == -1 and forceCol == -1:
         for i in range(3):
             for j in range(3):
-                if smol_check_winner(board, i, j) == None:
+                if game_logic.smol_check_winner(board, i, j) == None:
                     smol_boards.append([i, j])
     else:
         smol_boards.append([forceRow, forceCol])
     return smol_boards
 
-# Check for a winner in a small board
-def smol_check_winner(board, bigRow, bigCol):
-    # Check rows
-    for row in range(3):
-        if (
-            board[bigRow][bigCol][row][0]
-            == board[bigRow][bigCol][row][1]
-            == board[bigRow][bigCol][row][2]
-            != 0
-        ):
-            return board[bigRow][bigCol][row][0]
-    # Check columns
-    for col in range(3):
-        if (
-            board[bigRow][bigCol][0][col]
-            == board[bigRow][bigCol][1][col]
-            == board[bigRow][bigCol][2][col]
-            != 0
-        ):
-            return board[bigRow][bigCol][0][col]
-    # Check diagonals
-    if (
-        board[bigRow][bigCol][0][0]
-        == board[bigRow][bigCol][1][1]
-        == board[bigRow][bigCol][2][2]
-        != 0
-    ):
-        return board[bigRow][bigCol][0][0]
-    if (
-        board[bigRow][bigCol][0][2]
-        == board[bigRow][bigCol][1][1]
-        == board[bigRow][bigCol][2][0]
-        != 0
-    ):
-        return board[bigRow][bigCol][0][2]
-    # Check for a tie
-    tie = True
-    for row in range(3):
-        for col in range(3):
-            if board[bigRow][bigCol][row][col] == 0:
-                tie = False
-    if tie:
-        return "Tie"
-    # No winner yet
-    return None
+
 
 # Display the winner of a small board
 def display_smol_winner(bigRow, bigCol, winner):
@@ -333,51 +290,7 @@ def display_smol_winner(bigRow, bigCol, winner):
             SPACING,
         )
 
-# Check for a winner in the big board
-def check_winner(board):
-    # Check rows
-    for row in range(3):
-        if (
-            smol_check_winner(board, row, 0)
-            == smol_check_winner(board, row, 1)
-            == smol_check_winner(board, row, 2)
-            != None
-        ):
-            return smol_check_winner(board, row, 0)
-    # Check columns
-    for col in range(3):
-        if (
-            smol_check_winner(board, 0, col)
-            == smol_check_winner(board, 1, col)
-            == smol_check_winner(board, 2, col)
-            != None
-        ):
-            return smol_check_winner(board, 0, col)
-    # Check diagonals
-    if (
-        smol_check_winner(board, 0, 0)
-        == smol_check_winner(board, 1, 1)
-        == smol_check_winner(board, 2, 2)
-        != None
-    ):
-        return smol_check_winner(board, 0, 0)
-    if (
-        smol_check_winner(board, 0, 2)
-        == smol_check_winner(board, 1, 1)
-        == smol_check_winner(board, 2, 0)
-        != None
-    ):
-        return smol_check_winner(board, 0, 2)
-    # Check for a tie
-    tie = True
-    for row in range(3):
-        for col in range(3):
-            if smol_check_winner(board, row, col) == None:
-                tie = False
-    if tie:
-        return "Tie"
-    # No winner yet
-    return False
+
 
 # Display the winner
 def display_winner(winner):
@@ -425,7 +338,7 @@ def start_game():
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
                             player = 2  # switch players
                             # this next part is self explanatory right?
-                            if smol_check_winner(board, smolRow, smolCol) == None:
+                            if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
                                 forceRow = smolRow
                                 forceCol = smolCol
                             else:
@@ -434,7 +347,7 @@ def start_game():
                     elif forceRow == -1 and forceCol == -1:
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
                             player = 2
-                            if smol_check_winner(board, smolRow, smolCol) == None:
+                            if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
                                 forceRow = smolRow
                                 forceCol = smolCol
                             else:
@@ -448,7 +361,7 @@ def start_game():
                     if bigCol == forceCol and bigRow == forceRow:
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
                             player = 1
-                            if smol_check_winner(board, smolRow, smolCol) == None:
+                            if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
                                 forceRow = smolRow
                                 forceCol = smolCol
                             else:
@@ -457,7 +370,7 @@ def start_game():
                     elif forceRow == -1 and forceCol == -1:
                         if handle_move(bigRow, bigCol, smolRow, smolCol, player):
                             player = 1
-                            if smol_check_winner(board, smolRow, smolCol) == None:
+                            if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
                                 forceRow = smolRow
                                 forceCol = smolCol
                             else:
@@ -468,9 +381,9 @@ def start_game():
         for bigRow in range(3):
             for bigCol in range(3):
                 # checks if there's a winner in the small board and displays it
-                if smol_check_winner(board, bigRow, bigCol) != None:
+                if game_logic.smol_check_winner(board, bigRow, bigCol) != None:
                     display_smol_winner(
-                        bigRow, bigCol, smol_check_winner(board, bigRow, bigCol)
+                        bigRow, bigCol, game_logic.smol_check_winner(board, bigRow, bigCol)
                     )
                 # makes highlighted board
                 for i in playable_smol_boards(forceRow, forceCol):
@@ -531,8 +444,8 @@ def start_game():
                             )
 
         # Check for win
-        if check_winner(board):
-            display_winner(check_winner(board))
+        if game_logic.check_winner(board):
+            display_winner(game_logic.check_winner(board))
         draw_board()
         # print(theme)
 
