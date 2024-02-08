@@ -328,57 +328,57 @@ def start_game():
         for event in pygame.event.get():  # aka whenever there's an event
             if event.type == pygame.QUIT:
                 game_over = True
+            if player == 1:
+                AI_move = ai.getMove(board, 2, forceRow, forceCol)
+                bigRow = AI_move[0]
+                bigCol = AI_move[1]
+                smolRow = AI_move[2]
+                smolCol = AI_move[3]
+                print(AI_move)
+                if (
+                    bigCol == forceCol and bigRow == forceRow
+                ):  # essentially, if the player in the highlighted board
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 2  # switch players
+                        # this next part is self explanatory right?
+                        if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1
+                elif forceRow == -1 and forceCol == -1:
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 2
+                        if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1
             elif event.type == pygame.MOUSEBUTTONDOWN:  # click
-                if player == 1:
-                    AI_move = ai.getMove(board, 1, forceRow, forceCol)
-                    bigRow = AI_move[0]
-                    bigCol = AI_move[1]
-                    smolRow = AI_move[2]
-                    smolCol = AI_move[3]
-                    if (
-                        bigCol == forceCol and bigRow == forceRow
-                    ):  # essentially, if the player in the highlighted board
-                        if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            player = 2  # switch players
-                            # this next part is self explanatory right?
-                            if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
-                                forceRow = smolRow
-                                forceCol = smolCol
-                            else:
-                                forceRow = -1
-                                forceCol = -1
-                    elif forceRow == -1 and forceCol == -1:
-                        if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            player = 2
-                            if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
-                                forceRow = smolRow
-                                forceCol = smolCol
-                            else:
-                                forceRow = -1
-                                forceCol = -1
-                else:
-                    bigRow = int(event.pos[1] // THIRD)
-                    bigCol = int(event.pos[0] // THIRD)
-                    smolRow = int((event.pos[1] // NINTH) % 3)
-                    smolCol = int((event.pos[0] // NINTH) % 3)
-                    if bigCol == forceCol and bigRow == forceRow:
-                        if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            player = 1
-                            if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
-                                forceRow = smolRow
-                                forceCol = smolCol
-                            else:
-                                forceRow = -1
-                                forceCol = -1
-                    elif forceRow == -1 and forceCol == -1:
-                        if handle_move(bigRow, bigCol, smolRow, smolCol, player):
-                            player = 1
-                            if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
-                                forceRow = smolRow
-                                forceCol = smolCol
-                            else:
-                                forceRow = -1
-                                forceCol = -1
+                bigRow = int(event.pos[1] // THIRD)
+                bigCol = int(event.pos[0] // THIRD)
+                smolRow = int((event.pos[1] // NINTH) % 3)
+                smolCol = int((event.pos[0] // NINTH) % 3)
+                if bigCol == forceCol and bigRow == forceRow:
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 1
+                        if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1
+                elif forceRow == -1 and forceCol == -1:
+                    if handle_move(bigRow, bigCol, smolRow, smolCol, player):
+                        player = 1
+                        if game_logic.smol_check_winner(board, smolRow, smolCol) == None:
+                            forceRow = smolRow
+                            forceCol = smolCol
+                        else:
+                            forceRow = -1
+                            forceCol = -1
         # Draw the game board
         screen.fill(theme[0])
         for bigRow in range(3):
@@ -449,6 +449,9 @@ def start_game():
         # Check for win
         if game_logic.check_winner(board):
             display_winner(game_logic.check_winner(board))
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    sys.exit()
         draw_board()
         # print(theme)
 

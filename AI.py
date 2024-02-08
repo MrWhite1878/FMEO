@@ -27,7 +27,7 @@ class CPU:
                 for bigCol in range(3):
                     for row in range(3):
                         for col in range(3):
-                            if board[bigRow][bigCol][row][col] == 0:
+                            if game_logic.smol_check_winner(board, bigRow, bigCol) == None and board[bigRow][bigCol][row][col] == 0:
                                 moves.append((bigRow, bigCol, row, col))
         return moves
 
