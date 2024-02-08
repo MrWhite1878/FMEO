@@ -9,6 +9,8 @@
 
 import pygame
 import game_logic
+import AI
+import sys
 
 # Initialize Pygame
 pygame.init()
@@ -316,6 +318,7 @@ forceRow, forceCol = (
 
 
 def start_game():
+    ai = AI.CPU()
     # Clear the screen
     screen.fill(theme[0])
     # Game loop
@@ -327,11 +330,11 @@ def start_game():
                 game_over = True
             elif event.type == pygame.MOUSEBUTTONDOWN:  # click
                 if player == 1:
-                    bigRow = int(event.pos[1] // THIRD)
-                    bigCol = int(event.pos[0] // THIRD)
-                    smolRow = int((event.pos[1] // NINTH) % 3)
-                    smolCol = int((event.pos[0] // NINTH) % 3)
-                    # print(bigRow, bigCol, smolRow, smolCol)
+                    AI_move = ai.getMove(board, 1, forceRow, forceCol)
+                    bigRow = AI_move[0]
+                    bigCol = AI_move[1]
+                    smolRow = AI_move[2]
+                    smolCol = AI_move[3]
                     if (
                         bigCol == forceCol and bigRow == forceRow
                     ):  # essentially, if the player in the highlighted board
@@ -460,6 +463,7 @@ def menu_screen():
         # Display the menu options
         display_menu()
 
+
         # Handle user input
         option = handle_input()
 
@@ -473,6 +477,7 @@ def menu_screen():
             theme = change_theme()
         elif option == "Quit":
             pygame.quit()
+            sys.exit()
 
 
 # Call the menu screen function to start the game
