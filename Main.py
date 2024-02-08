@@ -329,12 +329,12 @@ def start_game():
             if event.type == pygame.QUIT:
                 game_over = True
             if player == 1:
-                AI_move = ai.getMove(board, 2, forceRow, forceCol)
+                AI_move = ai.getMove(board, 1, forceRow, forceCol)
                 bigRow = AI_move[0]
                 bigCol = AI_move[1]
                 smolRow = AI_move[2]
                 smolCol = AI_move[3]
-                print(AI_move)
+                print(f"Final Move: {AI_move}")
                 if (
                     bigCol == forceCol and bigRow == forceRow
                 ):  # essentially, if the player in the highlighted board

@@ -39,12 +39,10 @@ class CPU:
         best_move = empty_cells[0]
 
         for move in empty_cells:
-            #print(move, move[0], move[1], move[2], move[3])
-            #print(board)
-            #print(board[move[0]][move[1]][move[2]][move[3]])
             board[move[0]][move[1]][move[2]][move[3]] = 1
-            value = self.minimax(board, depth, 1, -10000, 10000, move[2], move[3])
+            value = self.minimax(board, depth, 2, -10000, 10000, move[2], move[3])
             board[move[0]][move[1]][move[2]][move[3]] = 0
+            print("Move: ", move, "Value: ", value)
             if value > best_value:
                 best_value = value
                 best_move = move
@@ -69,6 +67,7 @@ class CPU:
             return self.evaluation_values[game_logic.check_winner(board)]
         
         children = self.possible_moves(board, forceRow, forceCol)
+        #print("Children: ", children)
 
         if player == 1:
             value = -10000
@@ -84,7 +83,7 @@ class CPU:
             value = 10000
             for child in children:
                 board[child[0]][child[1]][child[2]][child[3]] = player
-                value = max(value, self.minimax(board, depth - 1, 1, alpha, beta, child[2], child[3]))
+                value = min(value, self.minimax(board, depth - 1, 1, alpha, beta, child[2], child[3]))
                 board[child[0]][child[1]][child[2]][child[3]] = 0
                 beta = min(beta, value)
                 if value <= alpha:
