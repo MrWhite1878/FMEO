@@ -91,11 +91,43 @@ class CPU:
             return value   
         
     def heuristic(self, board):
+        '''
+        -small board wins add 5 points,
+        -winning the center board adds 10, 
+        -winning a corner board adds 3,
+        -getting a center square in any small board is worth 3, 
+        -and getting a square in the center board is worth 3.
+Two board wins which can be continued for a winning
+sequence (i.e. they are in a row, column or diagonal without an
+interfering win for the other player in the third board of the
+sequence) are worth 4 points, and a similar sequence inside a
+small board is worth 2 points. A symmetric negative score is
+given if the other player has these features
+        '''
         evaluation = 0
         for row in range(3):
             for col in range(3):
+                #small board wins add 5
                 if game_logic.smol_check_winner(board, row, col) == 1:
-                    evaluation += 100
+                    evaluation += 5
+                    #center board wins add 10
+                    if row == 1 and col == 1:
+                        evaluation += 10
+                    #corner board wins add 3
+                    elif row % 2 == 0 and col % 2 == 0:
+                        evaluation += 3
                 elif game_logic.smol_check_winner(board, row, col) == 2:
-                    evaluation -= 100
+                    evaluation -= 5
+                    if row == 1 and col == 1:
+                        evaluation -= 10
+                    elif row % 2 == 0 and col % 2 == 0:
+                        evaluation -= 3
+                #getting a square in the center board is worth 3
+                if row == 1 and col == 1:
+                    for i in range(3):
+                        for j in range(3):
+                            if board[row][col][i][j] == 1:
+                                evaluation += 3
+                            elif board[row][col][i][j] == 2:
+                                evaluation -= 3
         return evaluation
