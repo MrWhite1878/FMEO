@@ -17,7 +17,7 @@ class CPU:
     
     def possible_moves(self, board, forceRow, forceCol):
         moves = []
-        if forceRow != -1 and forceCol != -1:
+        if (forceRow != -1) and (forceCol != -1):
             for row in range(3):
                 for col in range(3):
                     if board[forceRow][forceCol][row][col] == 0:
@@ -42,7 +42,7 @@ class CPU:
             board[move[0]][move[1]][move[2]][move[3]] = 1
             value = self.minimax(board, depth, 2, -10000, 10000, move[2], move[3])
             board[move[0]][move[1]][move[2]][move[3]] = 0
-            print("Move: ", move, "Value: ", value)
+            #print("Move: ", move, "Value: ", value)
             if value > best_value:
                 best_value = value
                 best_move = move
@@ -92,10 +92,48 @@ class CPU:
         
     def heuristic(self, board):
         evaluation = 0
+
+        # if CPU has won the game
+        if game_logic.check_winner(board) == 1:
+            return 10000
+        # if the player has won the game
+        elif game_logic.check_winner(board) == 2:
+            return -10000
+        
         for row in range(3):
             for col in range(3):
+                # if the CPU has won the small board
                 if game_logic.smol_check_winner(board, row, col) == 1:
-                    evaluation += 100
+                    evaluation += 5
+                    # if the CPU has won the center small board
+                    if row == 1 and col == 1:
+                        evaluation += 10
+                    # if the CPU has won a corner small board
+                    elif (row == 0 and col == 0) or (row == 0 and col == 2) or (row == 2 and col == 0) or (row == 2 and col == 2):
+                        evaluation += 3
+
+                # if the player has won the small board
                 elif game_logic.smol_check_winner(board, row, col) == 2:
-                    evaluation -= 100
+                    evaluation -= 5
+                    # if the player has won the center small board
+                    if row == 1 and col == 1:
+                        evaluation -= 10
+                    # if the player has won a corner small board
+                    elif (row == 0 and col == 0) or (row == 0 and col == 2) or (row == 2 and col == 0) or (row == 2 and col == 2):
+                        evaluation -= 3
+
+                # if the CPU has gotten a center cell in a small board
+                if board[row][col][1][1] == 1:
+                    evaluation += 3
+                # if the player has gotten a center cell in a small board
+                elif board[row][col][1][1] == 2:
+                    evaluation -= 3   
+
+                #if the CPU has gotten a cell in the center board
+                if board[1][1][row][col] == 1:
+                    evaluation += 3
+                #if the player has gotten a cell in the center board
+                elif board[1][1][row][col] == 2:
+                    evaluation -= 3
+            
         return evaluation
