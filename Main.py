@@ -1,5 +1,4 @@
 # LENGTH Adjustable Super Tic Tac Toe in pygame (Full rules and menu included)
-# Author: Michael White
 # Date: 10/28/2023
 # Description: This is a game of Super Tic Tac Toe in pygame.
 #
@@ -315,7 +314,7 @@ forceRow, forceCol = (
     -1,
     -1,
 )  # -1 means no force, and they correspond to the move that the next player must make
-
+depth = 2 # the depth of the minimax algorithm
 
 def start_game():
     ai = AI.CPU()
@@ -329,12 +328,12 @@ def start_game():
             if event.type == pygame.QUIT:
                 game_over = True
             if player == 1:
-                AI_move = ai.getMove(board, 1, forceRow, forceCol)
+                AI_move = ai.getMove(board, depth, forceRow, forceCol)
                 bigRow = AI_move[0]
                 bigCol = AI_move[1]
                 smolRow = AI_move[2]
                 smolCol = AI_move[3]
-                print(f"Final Move: {AI_move}")
+                #print(f"Final Move: {AI_move}")
                 if (
                     bigCol == forceCol and bigRow == forceRow
                 ):  # essentially, if the player in the highlighted board
